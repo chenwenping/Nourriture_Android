@@ -39,7 +39,6 @@ public class RecipesFragment extends Fragment {
         super.onActivityCreated(savedInstanceState);
         recipesList = (ListView) getActivity().findViewById(R.id.listViewRecipes);
         progress = new ProgressDialog(getActivity());
-        progress.setTitle("Processing");
         progress.setMessage("Loading...");
         progress.show();
         try {
