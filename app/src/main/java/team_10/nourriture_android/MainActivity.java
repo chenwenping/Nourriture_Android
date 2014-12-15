@@ -32,7 +32,6 @@ public class MainActivity extends FragmentActivity {
         firstButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.e("toto", "toto");
                 FragmentManager fragmentManager = getSupportFragmentManager();
                 fragmentManager.beginTransaction().replace(R.id.contentFrame, new DishesFragment()).commit();
             }
