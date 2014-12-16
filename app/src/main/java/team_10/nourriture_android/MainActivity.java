@@ -15,11 +15,20 @@ public class MainActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         Button firstButton = (Button) findViewById(R.id.firstButton);
+        Button secondButton = (Button) findViewById(R.id.secondButton);
+
         firstButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 FragmentManager fragmentManager = getSupportFragmentManager();
                 fragmentManager.beginTransaction().replace(R.id.contentFrame, new RecipesFragment()).commit();
+            }
+        });
+        secondButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                FragmentManager fragmentManager = getSupportFragmentManager();
+                fragmentManager.beginTransaction().replace(R.id.contentFrame, new DishesFragment()).commit();
             }
         });
     }
