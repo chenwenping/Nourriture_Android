@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <RelativeLayout
+        android:id="@+id/rl_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/title_nav_bar" >
+
+        <Button
+            android:id="@+id/btn_back"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="10dp"
+            android:background="@drawable/back"/>
+
+        <TextView
+            style="@style/title_text_style"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:text="@string/dish_comment" />
+
+    </RelativeLayout>
+
+    <android.support.v4.widget.SwipeRefreshLayout
+        android:id="@+id/swipe_refresh"
+        android:layout_below="@+id/rl_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" >
+
+        <ListView
+            android:id="@+id/commentListView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:divider="@color/white" />
+
+    </android.support.v4.widget.SwipeRefreshLayout>
+
+    <TextView
+        android:id="@+id/tv_no_dish_comment"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:background="@drawable/item"
+        android:layout_below="@+id/rl_title"
+        android:visibility="gone"
+        android:gravity="center"
+        android:layout_margin="10dp"
+        android:text="No comment?\n\n\nEnter comments from the bottom and Send it."
+        android:textColor="@color/black"
+        android:textSize="@dimen/text_main" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:background="@drawable/bottom"
+        android:layout_marginTop="2dp"
+        android:orientation="horizontal" >
+
+        <EditText
+            android:id="@+id/et_dish_comment"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:background="@drawable/login_input"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            android:layout_margin="6dp"
+            android:layout_weight="1"
+            android:padding="10dp"
+            android:hint="dish comment"
+            android:textColor="@color/edit_text_color"
+            android:textSize="@dimen/text_main" >
+        </EditText>
+
+        <Button
+            android:id="@+id/btn_dish_comment"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_marginBottom="6dp"
+            android:layout_marginRight="6dp"
+            android:layout_marginTop="6dp"
+            android:layout_weight="6"
+            android:background="@drawable/comment_arrow" />
+
+    </LinearLayout>
+
+</RelativeLayout>

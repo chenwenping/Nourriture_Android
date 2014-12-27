@@ -1,4 +1,4 @@
-package team_10.nourriture_android;
+package team_10.nourriture_android.activity;
 
 import android.app.ProgressDialog;
 import android.os.Bundle;
@@ -18,6 +18,8 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 
+import team_10.nourriture_android.R;
+
 public class RecipesFragment extends Fragment {
 
     ArrayList<String> recipesNameList;
@@ -32,6 +34,7 @@ public class RecipesFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_recipes, container, false);
+//        return inflater.inflate(R.layout.activity_dish_detail, container, false);
     }
 
     @Override
@@ -50,8 +53,8 @@ public class RecipesFragment extends Fragment {
     }
 
     public void getAllRecipes() throws JSONException {
-        NourritureRestClient.get("recipes", null, new JsonHttpResponseHandler() {
-
+//        NourritureRestClient.get("recipes", null, new JsonHttpResponseHandler() {
+          NourritureRestClient.get("dishes", null, new JsonHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
             }

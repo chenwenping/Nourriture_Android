@@ -2,10 +2,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingBottom="@dimen/activity_vertical_margin"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
     tools:context=".MainActivity">
 
     <FrameLayout
@@ -14,6 +10,71 @@
         android:layout_height="fill_parent"
         android:layout_above="@+id/buttonBottomLayout" />
 
+   <!-- <LinearLayout
+        android:id="@+id/buttonBottomLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/item"
+        android:layout_alignParentBottom="true"
+        android:orientation="horizontal">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:layout_margin="5dp"
+            android:layout_weight="1">
+
+            <Button
+                android:id="@+id/dishes_btn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/tab_dish_selector" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:layout_margin="5dp"
+            android:layout_weight="1">
+
+            <Button
+                android:id="@+id/myRecipees_btn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/tab_recipe_selector" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:layout_margin="5dp"
+            android:layout_weight="1">
+
+            <Button
+                android:id="@+id/notification_btn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/tab_notification_selector" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:layout_margin="5dp"
+            android:layout_weight="1">
+
+            <Button
+                android:id="@+id/setting_btn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/tab_setting_selector" />
+        </LinearLayout>
+    </LinearLayout>-->
+
     <LinearLayout
         android:id="@+id/buttonBottomLayout"
         android:layout_width="match_parent"
@@ -21,26 +82,130 @@
         android:layout_alignParentBottom="true"
         android:orientation="horizontal">
 
-        <Button
-            android:id="@+id/firstButton"
-            android:layout_width="0dp"
+        <RelativeLayout
+            android:id="@+id/dish_rl"
+            android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1" />
+            android:layout_weight="1"
+            android:gravity="center|bottom" >
 
-        <Button
-            android:id="@+id/secondButton"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1" />
+            <Button
+                android:id="@+id/dishes_btn"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentTop="true"
+                android:background="@drawable/bot_bar"
+                android:drawableTop="@drawable/tab_dish_selector"
+                android:gravity="center"
+                android:paddingTop="5dp"
+                android:text="Discover"
+                android:textColor="@color/white"
+                android:textSize="10sp" />
 
-        <Button
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1" />
+        </RelativeLayout>
 
-        <Button
-            android:layout_width="0dp"
+        <RelativeLayout
+            android:id="@+id/recipe_rl"
+            android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1" />
+            android:layout_weight="1"
+            android:gravity="center|bottom" >
+
+            <Button
+                android:id="@+id/myRecipes_btn"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/bot_bar"
+                android:drawableTop="@drawable/tab_dish_selector"
+                android:gravity="center"
+                android:paddingTop="5dp"
+                android:text="@string/discover"
+                android:textColor="@color/white"
+                android:textSize="10sp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentTop="true"
+                android:layout_marginRight="25dip"
+                android:layout_marginTop="5dip"
+                android:background="@drawable/tab_notification_selector"
+                android:gravity="center"
+                android:textColor="@color/white"
+                android:textSize="12sp"
+                android:visibility="gone" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/notification_rl"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center|bottom"
+            android:visibility="visible">
+
+            <ImageView
+                android:id="@+id/plan_message_iv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentTop="true"
+                android:layout_marginRight="25dip"
+                android:layout_marginTop="5dip"
+                android:src="@drawable/message_new"
+                android:visibility="gone" />
+
+            <Button
+                android:id="@+id/notification_btn"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentTop="true"
+                android:background="@drawable/bot_bar"
+                android:drawableTop="@drawable/tab_notification_selector"
+                android:gravity="center"
+                android:paddingTop="5dp"
+                android:text="@string/discover"
+                android:textColor="@color/white"
+                android:textSize="10sp" />
+
+            <TextView
+                android:id="@+id/note_message_count_tv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentTop="true"
+                android:layout_marginRight="25dip"
+                android:layout_marginTop="5dip"
+                android:background="@drawable/notification"
+                android:gravity="center"
+                android:textColor="@color/white"
+                android:textSize="12sp"
+                android:visibility="gone" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/setting_rl"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center|bottom" >
+
+            <Button
+                android:id="@+id/setting_btn"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/bot_bar"
+                android:drawableTop="@drawable/tab_setting_selector"
+                android:gravity="center"
+                android:paddingTop="5dp"
+                android:text="@string/discover"
+                android:textColor="@color/white"
+                android:textSize="10sp" />
+        </RelativeLayout>
+
     </LinearLayout>
+
 </RelativeLayout>
