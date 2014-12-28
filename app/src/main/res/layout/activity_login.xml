@@ -98,14 +98,6 @@
                     android:layout_height="wrap_content"
                     android:src="@drawable/password" />
 
-                <!--<TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:gravity="center_vertical"
-                    android:background="@drawable/password"
-                    android:textColor="@android:color/black"
-                    android:textSize="@dimen/text_big" />-->
-
                 <EditText
                     android:id="@+id/et_password"
                     android:layout_width="fill_parent"

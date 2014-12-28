@@ -24,7 +24,27 @@ public class UserBean implements Serializable {
     private Date registrationDate;
     private String role; /* 'normal', 'foodSupplier', 'gastronomist' */
     private String picture;
-    private ProblemBean problemBean;
+    private String[] problems;
+    private String[] friends;
+
+    public void initUserBean(UserBean userBean){
+        this._id = userBean._id;
+        this.username = userBean.username;
+        this.password = userBean.password;
+        this.admin = userBean.admin;
+        this.firstName = userBean.firstName;
+        this.lastName = userBean.lastName;
+        this.gender = userBean.gender;
+        this.email = userBean.email;
+        this.status = userBean.status;
+        this.phoneNumber = userBean.phoneNumber;
+        this.introduction = userBean.introduction;
+        this.registrationDate = userBean.registrationDate;
+        this.role = userBean.role;
+        this.picture = userBean.picture;
+        this.problems = userBean.problems;
+        this.friends = userBean.friends;
+    }
 
     public String get_id() { return _id; }
 
@@ -134,11 +154,15 @@ public class UserBean implements Serializable {
         this.picture = picture;
     }
 
-    public ProblemBean getProblemBean() {
-        return problemBean;
+    public String[] getProblems() {
+        return problems;
     }
 
-    public void setProblemBean(ProblemBean problemBean) {
-        this.problemBean = problemBean;
+    public void setProblems(String[] problems) {
+        this.problems = problems;
     }
+
+    public String[] getFriends() { return friends; }
+
+    public void setFriends(String[] friends) { this.friends = friends; }
 }

@@ -2,7 +2,6 @@ package team_10.nourriture_android.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.PersistableBundle;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.View;
@@ -12,8 +11,18 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.loopj.android.http.JsonHttpResponseHandler;
+
+import org.apache.http.Header;
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import java.util.List;
+
 import team_10.nourriture_android.R;
 import team_10.nourriture_android.bean.DishBean;
+import team_10.nourriture_android.bean.LikeBean;
+import team_10.nourriture_android.jsonTobean.JsonTobean;
 import team_10.nourriture_android.utils.AsynImageLoader;
 
 /**
@@ -22,12 +31,15 @@ import team_10.nourriture_android.utils.AsynImageLoader;
 public class DishDetailActivity extends ActionBarActivity implements View.OnClickListener{
 
     private DishBean dishBean;
-    private  AsynImageLoader asynImageLoader;
+    private AsynImageLoader asynImageLoader;
 
     private Button back_btn;
     private ImageView dish_picture_img, dish_favor_img;
     private LinearLayout dish_favor_ll, dish_comment_ll;
     private TextView dish_name_tv, dish_description_tv, dish_ingredient_tv, dish_step_tv;
+
+    private List<LikeBean> likeBeanList;
+    private LikeBean likeBean;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -68,7 +80,53 @@ public class DishDetailActivity extends ActionBarActivity implements View.OnClic
             asynImageLoader.showImageAsyn(dish_picture_img, dishBean.getPicture(), R.drawable.default_dish_picture);
         }
 
-//        dish_ingredient_tv.setText(dishBean.getIngredientBean().getName());
+        getLikesFromDish();
+    }
+
+    public void getLikesFromDish(){
+        String url = "/getLikesFromDish/" + dishBean.get_id();
+        NourritureRestClient.get(url, null, new JsonHttpResponseHandler(){
+
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                if(statusCode == 200){
+                    try {
+                        likeBean = JsonTobean.getBean(LikeBean.class, response.toString());
+                        Log.e("likeBean", response.toString());
+                    }catch (Exception e){
+                        e.printStackTrace();
+                    }
+                }else{
+                    // http request error
+                }
+//                super.onSuccess(statusCode, headers, response);
+            }
+
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, String responseString) {
+               // super.onSuccess(statusCode, headers, responseString);
+                if(statusCode == 200){
+                    try {
+                        likeBeanList = JsonTobean.getList(LikeBean[].class, responseString.toString());
+                        Log.e("likeBeanList", responseString.toString());
+                    }catch (Exception e){
+                        e.printStackTrace();
+                    }
+                }else{
+                    // http request error
+                }
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                super.onFailure(statusCode, headers, responseString, throwable);
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONArray errorResponse) {
+                super.onFailure(statusCode, headers, throwable, errorResponse);
+            }
+        });
     }
 
     @Override
@@ -81,7 +139,7 @@ public class DishDetailActivity extends ActionBarActivity implements View.OnClic
 
                 break;
             case R.id.ll_dish_comment:
-                Intent intent = new Intent(DishDetailActivity.this, CommentActivity.class);
+                Intent intent = new Intent(DishDetailActivity.this, DishCommentActivity.class);
                 Bundle bundle = new Bundle();
                 bundle.putSerializable("dishBean", dishBean);
                 intent.putExtras(bundle);

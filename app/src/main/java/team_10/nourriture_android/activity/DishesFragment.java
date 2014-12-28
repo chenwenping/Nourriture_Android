@@ -1,7 +1,9 @@
 package team_10.nourriture_android.activity;
 
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
@@ -13,6 +15,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.Toast;
 
 
 import com.loopj.android.http.JsonHttpResponseHandler;
@@ -21,13 +24,15 @@ import org.apache.http.Header;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.io.IOException;
 import java.util.List;
 
 import team_10.nourriture_android.R;
 import team_10.nourriture_android.adapter.DishAdapter;
+import team_10.nourriture_android.application.MyApplication;
 import team_10.nourriture_android.bean.DishBean;
+import team_10.nourriture_android.bean.UserBean;
 import team_10.nourriture_android.jsonTobean.JsonTobean;
+import team_10.nourriture_android.utils.GlobalParams;
 
 public class DishesFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener, View.OnClickListener {
 
@@ -42,7 +47,7 @@ public class DishesFragment extends Fragment implements SwipeRefreshLayout.OnRef
     private EditText search_text;
     private Button search_btn;
 
-    private boolean isLogin = false;
+    private boolean isLogin;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -82,6 +87,7 @@ public class DishesFragment extends Fragment implements SwipeRefreshLayout.OnRef
     public void onClick(View v) {
         switch (v.getId()){
             case R.id.btn_add_dish:
+                isLogin = MyApplication.getInstance().isLogin();
                 if(isLogin){
                     Intent intent = new Intent(getActivity(), DishAddActivity.class);
                     startActivity(intent);
@@ -120,38 +126,49 @@ public class DishesFragment extends Fragment implements SwipeRefreshLayout.OnRef
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
                 progress.dismiss();
-                try {
-                    dishesList = JsonTobean.getList(DishBean[].class, response.toString());
-                    Log.i("ping",response.toString());
-                    if(isRefresh){
+                if(statusCode == 200){
+                    try {
+                        dishesList = JsonTobean.getList(DishBean[].class, response.toString());
+                        Log.i("ping",response.toString());
+                        if(isRefresh){
 //                        dishAdapter = new DishAdapter(getActivity(), dishesList);
-                        dishAdapter.mDishList.clear();
-                        dishAdapter.mDishList.addAll(dishesList);
-                        isRefresh= false;
-                    }else{
-                        dishAdapter = new DishAdapter(getActivity(), false);
-                        dishAdapter.mDishList.addAll(dishesList);
+                            if(dishAdapter.mDishList!=null && dishAdapter.mDishList.size()>0){
+                                dishAdapter.mDishList.clear();
+                            }
+                            dishAdapter.mDishList.addAll(dishesList);
+                            isRefresh= false;
+                        }else{
+                            dishAdapter = new DishAdapter(getActivity(), false);
+                            dishAdapter.mDishList.addAll(dishesList);
+                        }
+                        dishListView.setAdapter(dishAdapter);
+                        dishAdapter.notifyDataSetChanged();
+                    } catch (Exception e) {
+                        e.printStackTrace();
                     }
-                    dishListView.setAdapter(dishAdapter);
-                    dishAdapter.notifyDataSetChanged();
-                } catch (Exception e) {
-                    e.printStackTrace();
+                }else{
+                    // cache
+                    progress.dismiss();
+                    Toast.makeText(getActivity(), "Network connection is wrong.", Toast.LENGTH_SHORT).show();
                 }
             }
 
             @Override
             public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-                super.onFailure(statusCode, headers, responseString, throwable);
+                progress.dismiss();
+                Toast.makeText(getActivity(), "Network connection is wrong.", Toast.LENGTH_SHORT).show();
             }
 
             @Override
             public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONArray errorResponse) {
-                super.onFailure(statusCode, headers, throwable, errorResponse);
+                progress.dismiss();
+                Toast.makeText(getActivity(), "Network connection is wrong.", Toast.LENGTH_SHORT).show();
             }
 
             @Override
             public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
-                super.onFailure(statusCode, headers, throwable, errorResponse);
+                progress.dismiss();
+                Toast.makeText(getActivity(), "Network connection is wrong.", Toast.LENGTH_SHORT).show();
             }
         });
     }

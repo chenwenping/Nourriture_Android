@@ -15,14 +15,18 @@ public class DishBean implements Serializable {
     private String description;
     private Date date;
     private String picture;
-    private RecipeBean recipeBean; /*  default: 'No recipeBean' */
-    private IngredientBean ingredientBean;
-    private ProblemBean problemBean;
-    private UserBean userBean;
+    private String[] recipe; /*  default: 'No recipeBean' */
+    private String[] ingredients;
+    private String[] problems;
+    private String user;
 
-    public String get_id() { return _id; }
+    public String get_id() {
+        return _id;
+    }
 
-    public void set_id(String _id) { this._id = _id; }
+    public void set_id(String _id) {
+        this._id = _id;
+    }
 
     public String getName() {
         return name;
@@ -56,35 +60,35 @@ public class DishBean implements Serializable {
         this.picture = picture;
     }
 
-    public RecipeBean getRecipeBean() {
-        return recipeBean;
+    public String[] getRecipe() {
+        return recipe;
     }
 
-    public void setRecipeBean(RecipeBean recipeBean) {
-        this.recipeBean = recipeBean;
+    public void setRecipe(String[] recipe) {
+        this.recipe = recipe;
     }
 
-    public IngredientBean getIngredientBean() {
-        return ingredientBean;
+    public String[] getIngredients() {
+        return ingredients;
     }
 
-    public void setIngredientBean(IngredientBean ingredientBean) {
-        this.ingredientBean = ingredientBean;
+    public void setIngredients(String[] ingredients) {
+        this.ingredients = ingredients;
     }
 
-    public ProblemBean getProblemBean() {
-        return problemBean;
+    public String[] getProblems() {
+        return problems;
     }
 
-    public void setProblemBean(ProblemBean problemBean) {
-        this.problemBean = problemBean;
+    public void setProblems(String[] problems) {
+        this.problems = problems;
     }
 
-    public UserBean getUserBean() {
-        return userBean;
+    public String getUser() {
+        return user;
     }
 
-    public void setUserBean(UserBean userBean) {
-        this.userBean = userBean;
+    public void setUser(String user) {
+        this.user = user;
     }
 }

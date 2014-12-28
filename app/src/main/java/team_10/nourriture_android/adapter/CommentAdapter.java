@@ -66,7 +66,7 @@ public class CommentAdapter extends BaseAdapter {
         final CommentBean commentBean = (CommentBean) mCommentList.get(position);
 //        cvh.user_name.setText(commentBean.getUserBean().getn);
 //        cvh.user_photo.setImageResource();
-        UserBean userBean = commentBean.getUserBean();
+//        UserBean userBean = commentBean.getUserBean();
 //        UserBean userBean = getUser();
         SimpleDateFormat df=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String strDate = df.format(commentBean.getDate());

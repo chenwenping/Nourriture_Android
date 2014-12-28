@@ -7,6 +7,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 
+import com.loopj.android.http.RequestParams;
+
 import team_10.nourriture_android.R;
 
 /**
@@ -40,10 +42,17 @@ public class DishAddActivity extends ActionBarActivity implements View.OnClickLi
         back_btn.setOnClickListener(this);
     }
 
+    public void addDish(){
+        RequestParams params = new RequestParams();
+        params.put("key", "value");
+        params.put("more", "data");
+    }
+
     @Override
     public void onClick(View v) {
         switch (v.getId()){
             case R.id.btn_dish_add:
+                addDish();
                 break;
             case R.id.img_dish_picture:
                 break;

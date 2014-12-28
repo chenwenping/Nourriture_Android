@@ -5,8 +5,6 @@ import java.io.UnsupportedEncodingException;
 /**
  * md5 类实现了RSA Data Security, Inc.在提交给IETF 的RFC1321中的MD5 message-digest 算法。
  * 
- * @author 孙晓晔
- * @version $Id: MD5.java,v 1.1 2012/11/07 09:04:34 chenlikun Exp $
  */
 public class MD5Utils {
 	/**

@@ -31,14 +31,14 @@ public class SharedPreferencesUtil {
      * @param pwd
      * @param isAutLogin
      */
-    public static synchronized void saveLogin(Context context,String uid,String pwd,String token,boolean isAutLogin){
+    public static synchronized void saveLogin(Context context, String uid, String pwd, boolean isAutLogin){
         SharedPreferences sp=context.getSharedPreferences(GlobalParams.TAG_GOBAL_SHARE_PREFERENCES, Context.MODE_PRIVATE);
         Date d = new Date();
         Editor editor = sp.edit();
         editor.putString(TAG_USER_NAME, uid);
         editor.putString(TAG_PASSWORD, pwd);
         editor.putLong(TAG_LOGIN_TIME, d.getTime());
-        editor.putString(TAG_USER_TOKEN, token);
+//        editor.putString(TAG_USER_TOKEN, token);
         editor.putBoolean(TAG_AUTO_LOGIN_BOOL, isAutLogin);
         editor.commit();
     }
@@ -53,8 +53,7 @@ public class SharedPreferencesUtil {
      * @param context
      */
     public static synchronized void clearLogin(Context context){
-        SharedPreferences sp = context.getSharedPreferences(
-                GlobalParams.TAG_GOBAL_SHARE_PREFERENCES, 0);
+        SharedPreferences sp = context.getSharedPreferences(GlobalParams.TAG_GOBAL_SHARE_PREFERENCES, 0);
         Editor editor = sp.edit();
         editor.putString(SharedPreferencesUtil.TAG_PASSWORD, "");
         editor.putBoolean(SharedPreferencesUtil.TAG_AUTO_LOGIN_BOOL, false);

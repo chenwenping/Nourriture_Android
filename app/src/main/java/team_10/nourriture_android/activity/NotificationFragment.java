@@ -10,6 +10,7 @@ import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import team_10.nourriture_android.R;
+import team_10.nourriture_android.application.MyApplication;
 
 
 /**
@@ -17,7 +18,9 @@ import team_10.nourriture_android.R;
  */
 public class NotificationFragment extends Fragment {
 
-    private LinearLayout ll_comment;
+    private LinearLayout ll_dishes_comment, ll_favor_dishes, ll_my_friends;
+
+    private boolean isLogin = false;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -26,6 +29,7 @@ public class NotificationFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        isLogin = MyApplication.getInstance().isLogin();
         return inflater.inflate(R.layout.fragment_notification, container, false);
     }
 
@@ -33,12 +37,49 @@ public class NotificationFragment extends Fragment {
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        ll_comment = (LinearLayout)getActivity().findViewById(R.id.ll_comment);
-        ll_comment.setOnClickListener(new View.OnClickListener() {
+        ll_dishes_comment = (LinearLayout)getActivity().findViewById(R.id.ll_dishes_comment);
+        ll_favor_dishes = (LinearLayout)getActivity().findViewById(R.id.ll_favor_dishes);
+        ll_my_friends = (LinearLayout)getActivity().findViewById(R.id.ll_my_friends);
+
+        ll_dishes_comment.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(getActivity().getApplicationContext(), CommentActivity.class);
-                startActivity(intent);
+                if(isLogin){
+                    Intent intent = new Intent(getActivity().getApplicationContext(), UserCommentActivity.class);
+                    startActivity(intent);
+                }else {
+                    Toast.makeText(getActivity(), "Please login first", Toast.LENGTH_SHORT).show();
+                    Intent intent = new Intent(getActivity().getApplicationContext(), LoginActivity.class);
+                    startActivity(intent);
+                }
+            }
+        });
+
+        ll_favor_dishes.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(isLogin){
+                    Intent intent = new Intent(getActivity().getApplicationContext(), FavorDishesActivity.class);
+                    startActivity(intent);
+                }else {
+                    Toast.makeText(getActivity(), "Please login first", Toast.LENGTH_SHORT).show();
+                    Intent intent = new Intent(getActivity().getApplicationContext(), LoginActivity.class);
+                    startActivity(intent);
+                }
+            }
+        });
+
+        ll_my_friends.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(isLogin){
+                    Intent intent = new Intent(getActivity().getApplicationContext(), FriendsActivity.class);
+                    startActivity(intent);
+                }else {
+                    Toast.makeText(getActivity(), "Please login first", Toast.LENGTH_SHORT).show();
+                    Intent intent = new Intent(getActivity().getApplicationContext(), LoginActivity.class);
+                    startActivity(intent);
+                }
             }
         });
     }
