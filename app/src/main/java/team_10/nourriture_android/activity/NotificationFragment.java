@@ -1,6 +1,8 @@
 package team_10.nourriture_android.activity;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -11,6 +13,8 @@ import android.widget.Toast;
 
 import team_10.nourriture_android.R;
 import team_10.nourriture_android.application.MyApplication;
+import team_10.nourriture_android.utils.GlobalParams;
+import team_10.nourriture_android.utils.SharedPreferencesUtil;
 
 
 /**
@@ -21,6 +25,8 @@ public class NotificationFragment extends Fragment {
     private LinearLayout ll_dishes_comment, ll_favor_dishes, ll_my_friends;
 
     private boolean isLogin = false;
+    private SharedPreferences sp;
+    private int request = 2;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -29,7 +35,9 @@ public class NotificationFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        isLogin = MyApplication.getInstance().isLogin();
+        //isLogin = MyApplication.getInstance().isLogin();
+        sp = getActivity().getSharedPreferences(GlobalParams.TAG_LOGIN_PREFERENCES, Context.MODE_PRIVATE);
+        isLogin = sp.getBoolean(SharedPreferencesUtil.TAG_IS_LOGIN, false);
         return inflater.inflate(R.layout.fragment_notification, container, false);
     }
 
@@ -50,7 +58,8 @@ public class NotificationFragment extends Fragment {
                 }else {
                     Toast.makeText(getActivity(), "Please login first", Toast.LENGTH_SHORT).show();
                     Intent intent = new Intent(getActivity().getApplicationContext(), LoginActivity.class);
-                    startActivity(intent);
+                    //startActivity(intent);
+                    startActivityForResult(intent, request);
                 }
             }
         });
@@ -64,7 +73,8 @@ public class NotificationFragment extends Fragment {
                 }else {
                     Toast.makeText(getActivity(), "Please login first", Toast.LENGTH_SHORT).show();
                     Intent intent = new Intent(getActivity().getApplicationContext(), LoginActivity.class);
-                    startActivity(intent);
+                    //startActivity(intent);
+                    startActivityForResult(intent, request);
                 }
             }
         });
@@ -78,9 +88,18 @@ public class NotificationFragment extends Fragment {
                 }else {
                     Toast.makeText(getActivity(), "Please login first", Toast.LENGTH_SHORT).show();
                     Intent intent = new Intent(getActivity().getApplicationContext(), LoginActivity.class);
-                    startActivity(intent);
+                    //startActivity(intent);
+                    startActivityForResult(intent, request);
                 }
             }
         });
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(resultCode==LoginActivity.KEY_IS_LOGIN){
+            isLogin = true;
+        }
     }
 }

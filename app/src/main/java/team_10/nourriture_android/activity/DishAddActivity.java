@@ -1,15 +1,28 @@
 package team_10.nourriture_android.activity;
 
+import android.app.ProgressDialog;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
+import android.util.Base64;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.Toast;
 
+import com.loopj.android.http.JsonHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
 
+import org.apache.http.Header;
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 import team_10.nourriture_android.R;
+import team_10.nourriture_android.utils.GlobalParams;
+import team_10.nourriture_android.utils.SharedPreferencesUtil;
 
 /**
  * Created by ping on 2014/12/21.
@@ -22,10 +35,18 @@ public class DishAddActivity extends ActionBarActivity implements View.OnClickLi
     private ImageView dish_picture;
     private Button back_btn;
 
+    private String dish_name;
+    private String dish_description;
+    private SharedPreferences sp;
+    private ProgressDialog progress;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_dish_add);
+
+        progress = new ProgressDialog(this);
+        sp = getApplicationContext().getSharedPreferences(GlobalParams.TAG_LOGIN_PREFERENCES, Context.MODE_PRIVATE);
 
         initView();
     }
@@ -42,17 +63,49 @@ public class DishAddActivity extends ActionBarActivity implements View.OnClickLi
         back_btn.setOnClickListener(this);
     }
 
-    public void addDish(){
+    public void addDish(String dish_name, String dish_description){
         RequestParams params = new RequestParams();
-        params.put("key", "value");
-        params.put("more", "data");
+        params.put("name", dish_name);
+        params.put("description", dish_description);
+
+        String userName = sp.getString(SharedPreferencesUtil.TAG_USER_NAME, "");
+        String password = sp.getString(SharedPreferencesUtil.TAG_PASSWORD, "");
+        String str = userName + ":" + password;
+        Log.e("str", str);
+        String encodeStr = Base64.encodeToString(str.getBytes(), Base64.DEFAULT);
+        String loginStr = "Basic " + encodeStr;
+        NourritureRestClient.addHeader(loginStr);
+
+        NourritureRestClient.post("dishes", params, new JsonHttpResponseHandler(){
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
+                super.onSuccess(statusCode, headers, response);
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+                super.onFailure(statusCode, headers, throwable, errorResponse);
+            }
+        });
     }
 
     @Override
     public void onClick(View v) {
         switch (v.getId()){
             case R.id.btn_dish_add:
-                addDish();
+                dish_name = dish_name_et.getText().toString().trim();
+                dish_description = dish_description_et.getText().toString().trim();
+                if(dish_name==null || "".equals(dish_name)){
+                    dish_name_et.requestFocus();
+                    Toast.makeText(this, "Please enter the dish name.", Toast.LENGTH_SHORT).show();
+                } else if(dish_description==null || "".equals(dish_description)){
+                    dish_description_et.requestFocus();
+                    Toast.makeText(this, "Please enter the dish description.", Toast.LENGTH_SHORT).show();
+                } else {
+                    progress.setMessage("Add dish...");
+                    progress.show();
+                    addDish(dish_name, dish_description);
+                }
                 break;
             case R.id.img_dish_picture:
                 break;

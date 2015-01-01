@@ -1,11 +1,14 @@
 package team_10.nourriture_android.activity;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBarActivity;
+import android.util.Base64;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -25,17 +28,22 @@ import java.util.List;
 
 import team_10.nourriture_android.R;
 import team_10.nourriture_android.adapter.CommentAdapter;
+import team_10.nourriture_android.application.MyApplication;
 import team_10.nourriture_android.bean.CommentBean;
 import team_10.nourriture_android.bean.DishBean;
+import team_10.nourriture_android.bean.UserBean;
 import team_10.nourriture_android.jsonTobean.JsonTobean;
+import team_10.nourriture_android.utils.GlobalParams;
+import team_10.nourriture_android.utils.ObjectPersistence;
+import team_10.nourriture_android.utils.SharedPreferencesUtil;
 
 /**
  * Created by ping on 2014/12/21.
  */
 public class DishCommentActivity extends ActionBarActivity implements SwipeRefreshLayout.OnRefreshListener, View.OnClickListener {
 
-    private static final String cdbCachePath = "/nourriture/comments/";
-    private String fileName = "comments .txt";
+//    private static final String cdbCachePath = "/nourriture/comments/";
+//    private String fileName = "comments .txt";
 
     private DishBean dishBean;
     private List<CommentBean> commentList;
@@ -51,6 +59,12 @@ public class DishCommentActivity extends ActionBarActivity implements SwipeRefre
     private Button dish_comment_btn;
     private String dish_comment; // send comment content
     private Button back_btn;
+    private ProgressDialog progress;
+    private boolean isLogin = false;
+    private SharedPreferences sp;
+    private int request = 3;
+
+    private static final String DISH_COMMENTS_DATA_PATH="_dish_comments_data.bean";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,7 +75,15 @@ public class DishCommentActivity extends ActionBarActivity implements SwipeRefre
         Intent intent = getIntent();
         dishBean= (DishBean)intent.getSerializableExtra("dishBean");
 
+        sp = getApplicationContext().getSharedPreferences(GlobalParams.TAG_LOGIN_PREFERENCES, Context.MODE_PRIVATE);
+        isLogin = sp.getBoolean(SharedPreferencesUtil.TAG_IS_LOGIN, false);
+
         initView();
+
+        progress = new ProgressDialog(this);
+        progress.setMessage("Loading...");
+        progress.show();
+
         getAllComments();
     }
 
@@ -85,11 +107,18 @@ public class DishCommentActivity extends ActionBarActivity implements SwipeRefre
     public void onClick(View v) {
         switch (v.getId()){
             case R.id.btn_dish_comment:
-                dish_comment = dish_comment_et.getText().toString().trim();
-                if(dish_comment==null || "".equals(dish_comment)){
-                    Toast.makeText(DishCommentActivity.this, "Comment content can't be empty.", Toast.LENGTH_SHORT).show();
-                }else{
-                    addComment(dish_comment);
+                if(isLogin){
+                    dish_comment = dish_comment_et.getText().toString().trim();
+                    if(dish_comment==null || "".equals(dish_comment)){
+                        Toast.makeText(DishCommentActivity.this, "Please enter the comment content.", Toast.LENGTH_SHORT).show();
+                    }else{
+                        progress.setMessage("Comment...");
+                        progress.show();
+                        addComment(dish_comment);
+                    }
+                } else{
+                    Intent intent = new Intent(this, LoginActivity.class);
+                    startActivityForResult(intent, request);
                 }
                 break;
             case R.id.btn_back:
@@ -97,6 +126,14 @@ public class DishCommentActivity extends ActionBarActivity implements SwipeRefre
                 break;
             default:
                 break;
+        }
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(resultCode==LoginActivity.KEY_IS_LOGIN){
+            isLogin = true;
         }
     }
 
@@ -117,18 +154,16 @@ public class DishCommentActivity extends ActionBarActivity implements SwipeRefre
         String url = "getCommentsFromDish/" + dishBean.get_id();
         Log.e("url", url);
         NourritureRestClient.get(url, null, new JsonHttpResponseHandler(){
-
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-
-            }
-
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
+                if(progress.isShowing()){
+                    progress.dismiss();
+                }
                 if(statusCode == 200) {
                     try {
                         commentList = JsonTobean.getList(CommentBean[].class, response.toString());
                         Log.e("commentList", response.toString());
+                        ObjectPersistence.writeObjectToFile(mContext, commentList, dishBean.get_id() + DISH_COMMENTS_DATA_PATH);
                         if (commentList == null || commentList.size() == 0) {
                             no_comment_tv.setVisibility(View.VISIBLE);
                             swipeLayout.setVisibility(View.GONE);
@@ -148,37 +183,114 @@ public class DishCommentActivity extends ActionBarActivity implements SwipeRefre
                             commentListView.setAdapter(commentAdapter);
                             commentAdapter.notifyDataSetChanged();
                         }
-
-                   /* String sdPath = OldSerializeHelper.getSDPath();
-                    if (sdPath != null && ab != null)
-                        commentList = (CourseDuringBean) SerializeHelper.getObjectFromFile(cdbCachePath, ab.getU_id() + fileName);
-
-                    if (ab != null)
-                        SerializeHelper.writeObjectToFile(commentList, cdbCachePath, ab.getU_id()+fileName);*/
-
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
                 }else{
-                    // cache
+                    if(progress.isShowing()){
+                        progress.dismiss();
+                    }
+                    getLocalCommentsData();
+                    if (commentList == null || commentList.size() == 0) {
+                        no_comment_tv.setVisibility(View.VISIBLE);
+                        swipeLayout.setVisibility(View.GONE);
+                    } else {
+                        no_comment_tv.setVisibility(View.GONE);
+                        swipeLayout.setVisibility(View.VISIBLE);
+                        if (isRefresh) {
+                            if (commentAdapter.mCommentList != null && commentAdapter.mCommentList.size() > 0) {
+                                commentAdapter.mCommentList.clear();
+                            }
+                            commentAdapter.mCommentList.addAll(commentList);
+                            isRefresh = false;
+                        } else {
+                            commentAdapter = new CommentAdapter(mContext, false);
+                            commentAdapter.mCommentList.addAll(commentList);
+                        }
+                        commentListView.setAdapter(commentAdapter);
+                        commentAdapter.notifyDataSetChanged();
+                    }
                 }
             }
 
             @Override
-            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-
-            }
-
-            @Override
-            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONArray errorResponse) {
-
+            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+                if(progress.isShowing()){
+                    progress.dismiss();
+                }
+                getLocalCommentsData();
+                if (commentList == null || commentList.size() == 0) {
+                    no_comment_tv.setVisibility(View.VISIBLE);
+                    swipeLayout.setVisibility(View.GONE);
+                } else {
+                    no_comment_tv.setVisibility(View.GONE);
+                    swipeLayout.setVisibility(View.VISIBLE);
+                    if (isRefresh) {
+                        if (commentAdapter.mCommentList != null && commentAdapter.mCommentList.size() > 0) {
+                            commentAdapter.mCommentList.clear();
+                        }
+                        commentAdapter.mCommentList.addAll(commentList);
+                        isRefresh = false;
+                    } else {
+                        commentAdapter = new CommentAdapter(mContext, false);
+                        commentAdapter.mCommentList.addAll(commentList);
+                    }
+                    commentListView.setAdapter(commentAdapter);
+                    commentAdapter.notifyDataSetChanged();
+                }
             }
         });
     }
 
     public void addComment(String dish_comment){
         RequestParams params = new RequestParams();
-        params.put("key", "value");
-        params.put("more", "data");
+        params.put("dish", dishBean.get_id());
+        params.put("content", dish_comment);
+        Log.e("dish", dishBean.get_id());
+        Log.e("content", dish_comment);
+        String userName = sp.getString(SharedPreferencesUtil.TAG_USER_NAME, "");
+        String password = sp.getString(SharedPreferencesUtil.TAG_PASSWORD, "");
+        String str = userName + ":" + password;
+        Log.e("str", str);
+        String encodeStr = Base64.encodeToString(str.getBytes(), Base64.DEFAULT);
+        String loginStr = "Basic " + encodeStr;
+        NourritureRestClient.addHeader(loginStr);
+
+        NourritureRestClient.post("comments", params, new JsonHttpResponseHandler(){
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                super.onSuccess(statusCode, headers, response);
+                Log.e("addComment", response.toString());
+                if(progress.isShowing()){
+                    progress.dismiss();
+                }
+            }
+
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
+                super.onSuccess(statusCode, headers, response);
+                Log.e("addComment", response.toString());
+                if(progress.isShowing()){
+                    progress.dismiss();
+                }
+            }
+
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, String responseString) {
+                super.onSuccess(statusCode, headers, responseString);
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+                super.onFailure(statusCode, headers, throwable, errorResponse);
+            }
+        });
+    }
+
+    private void getLocalCommentsData(){
+        List<CommentBean> localCommentList = (List<CommentBean>) ObjectPersistence.readObjectFromFile(mContext, dishBean.get_id() + DISH_COMMENTS_DATA_PATH);
+        if(localCommentList !=null ){
+            commentList = localCommentList;
+        }
     }
 }

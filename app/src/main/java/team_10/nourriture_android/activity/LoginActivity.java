@@ -1,6 +1,7 @@
 package team_10.nourriture_android.activity;
 
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
@@ -32,6 +33,7 @@ import team_10.nourriture_android.utils.SharedPreferencesUtil;
 public class LoginActivity extends ActionBarActivity implements View.OnClickListener{
 
     public static final String TAG_USER_ACCOUNT = "user.s";
+    public static int KEY_IS_LOGIN = 1;
 
     private EditText username_et;
     private EditText password_et;
@@ -82,12 +84,6 @@ public class LoginActivity extends ActionBarActivity implements View.OnClickList
         String loginStr = "Basic " + encodeStr;
         NourritureRestClient.addHeader(loginStr);
         NourritureRestClient.post("login", null, new JsonHttpResponseHandler(){
-
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-
-            }
-
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
                 progress.dismiss();
@@ -97,7 +93,10 @@ public class LoginActivity extends ActionBarActivity implements View.OnClickList
                         userList = JsonTobean.getList(UserBean[].class, response.toString());
                         MyApplication.getInstance().updateOrSaveUserBean(userList.get(0));
                         MyApplication.getInstance().islogin = true;
+                        SharedPreferencesUtil.saveLogin(getBaseContext(), userName, password, true);
                         Toast.makeText(LoginActivity.this, "Login Success.", Toast.LENGTH_SHORT).show();
+                        Intent intent = new Intent();
+                        setResult(KEY_IS_LOGIN, intent);
                         finish();
                     }catch (Exception e){
                         e.printStackTrace();
@@ -117,11 +116,6 @@ public class LoginActivity extends ActionBarActivity implements View.OnClickList
                 password_et.setText(null);
                 username_et.requestFocus();
                 Toast.makeText(LoginActivity.this, "Username or Password is wrong.", Toast.LENGTH_SHORT).show();
-            }
-
-            @Override
-            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONArray errorResponse) {
-
             }
         });
     }

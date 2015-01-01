@@ -17,7 +17,6 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
 
-
 import com.loopj.android.http.JsonHttpResponseHandler;
 
 import org.apache.http.Header;
@@ -30,9 +29,10 @@ import team_10.nourriture_android.R;
 import team_10.nourriture_android.adapter.DishAdapter;
 import team_10.nourriture_android.application.MyApplication;
 import team_10.nourriture_android.bean.DishBean;
-import team_10.nourriture_android.bean.UserBean;
 import team_10.nourriture_android.jsonTobean.JsonTobean;
 import team_10.nourriture_android.utils.GlobalParams;
+import team_10.nourriture_android.utils.ObjectPersistence;
+import team_10.nourriture_android.utils.SharedPreferencesUtil;
 
 public class DishesFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener, View.OnClickListener {
 
@@ -47,7 +47,12 @@ public class DishesFragment extends Fragment implements SwipeRefreshLayout.OnRef
     private EditText search_text;
     private Button search_btn;
 
+    private Context mContext;
     private boolean isLogin;
+    private int request = 1;
+
+    private static final String DISHES_DATA_PATH="_dishes_data.bean";
+    private SharedPreferences sp;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -62,6 +67,7 @@ public class DishesFragment extends Fragment implements SwipeRefreshLayout.OnRef
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+        mContext = getActivity();
 
         addDish_btn = (Button)getActivity().findViewById(R.id.btn_add_dish);
         search_btn = (Button)getActivity().findViewById(R.id.btn_search);
@@ -77,9 +83,12 @@ public class DishesFragment extends Fragment implements SwipeRefreshLayout.OnRef
                 android.R.color.holo_blue_bright, android.R.color.holo_orange_light);
         dishListView = (ListView)getActivity().findViewById(R.id.dishListView);
 
+        sp = getActivity().getSharedPreferences(GlobalParams.TAG_LOGIN_PREFERENCES, Context.MODE_PRIVATE);
+
         progress = new ProgressDialog(getActivity());
         progress.setMessage("Loading...");
         progress.show();
+
         getAllDishes();
     }
 
@@ -87,19 +96,30 @@ public class DishesFragment extends Fragment implements SwipeRefreshLayout.OnRef
     public void onClick(View v) {
         switch (v.getId()){
             case R.id.btn_add_dish:
-                isLogin = MyApplication.getInstance().isLogin();
+                //isLogin = MyApplication.getInstance().isLogin();
+                isLogin = sp.getBoolean(SharedPreferencesUtil.TAG_IS_LOGIN, false);
+                Log.e("isLogin", String.valueOf(isLogin));
                 if(isLogin){
                     Intent intent = new Intent(getActivity(), DishAddActivity.class);
                     startActivity(intent);
                 }else{
                     Intent intent = new Intent(getActivity(), LoginActivity.class);
-                    startActivity(intent);
+                    //startActivity(intent);
+                    startActivityForResult(intent, request);
                 }
                 break;
             case R.id.btn_search:
                 break;
             default:
                 break;
+        }
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(resultCode==LoginActivity.KEY_IS_LOGIN){
+            isLogin = true;
         }
     }
 
@@ -118,27 +138,25 @@ public class DishesFragment extends Fragment implements SwipeRefreshLayout.OnRef
 
     public void getAllDishes() {
         NourritureRestClient.get("dishes", null, new JsonHttpResponseHandler() {
-
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-            }
-
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
-                progress.dismiss();
+                if(progress.isShowing()){
+                    progress.dismiss();
+                }
                 if(statusCode == 200){
                     try {
                         dishesList = JsonTobean.getList(DishBean[].class, response.toString());
-                        Log.i("ping",response.toString());
+                        Log.i("ping", response.toString());
+                        ObjectPersistence.writeObjectToFile(mContext, dishesList, DISHES_DATA_PATH);
                         if(isRefresh){
-//                        dishAdapter = new DishAdapter(getActivity(), dishesList);
+                            //dishAdapter = new DishAdapter(getActivity(), dishesList);
                             if(dishAdapter.mDishList!=null && dishAdapter.mDishList.size()>0){
                                 dishAdapter.mDishList.clear();
                             }
                             dishAdapter.mDishList.addAll(dishesList);
                             isRefresh= false;
                         }else{
-                            dishAdapter = new DishAdapter(getActivity(), false);
+                            dishAdapter = new DishAdapter(mContext, false);
                             dishAdapter.mDishList.addAll(dishesList);
                         }
                         dishListView.setAdapter(dishAdapter);
@@ -147,29 +165,59 @@ public class DishesFragment extends Fragment implements SwipeRefreshLayout.OnRef
                         e.printStackTrace();
                     }
                 }else{
-                    // cache
-                    progress.dismiss();
-                    Toast.makeText(getActivity(), "Network connection is wrong.", Toast.LENGTH_SHORT).show();
+                    if(progress.isShowing()){
+                        progress.dismiss();
+                    }
+                    getLocalDishesData();
+                    if (dishesList != null && dishesList.size()>0) {
+                        if(isRefresh){
+                            if(dishAdapter.mDishList!=null && dishAdapter.mDishList.size()>0){
+                                dishAdapter.mDishList.clear();
+                            }
+                            dishAdapter.mDishList.addAll(dishesList);
+                            isRefresh= false;
+                        }else{
+                            dishAdapter = new DishAdapter(mContext, false);
+                            dishAdapter.mDishList.addAll(dishesList);
+                        }
+                        dishListView.setAdapter(dishAdapter);
+                        dishAdapter.notifyDataSetChanged();
+                    } else {
+                        Toast.makeText(mContext, "Network connection is wrong.", Toast.LENGTH_SHORT).show();
+                    }
                 }
             }
 
             @Override
-            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-                progress.dismiss();
-                Toast.makeText(getActivity(), "Network connection is wrong.", Toast.LENGTH_SHORT).show();
-            }
-
-            @Override
-            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONArray errorResponse) {
-                progress.dismiss();
-                Toast.makeText(getActivity(), "Network connection is wrong.", Toast.LENGTH_SHORT).show();
-            }
-
-            @Override
             public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
-                progress.dismiss();
-                Toast.makeText(getActivity(), "Network connection is wrong.", Toast.LENGTH_SHORT).show();
+                if(progress.isShowing()){
+                    progress.dismiss();
+                }
+                getLocalDishesData();
+                if (dishesList != null && dishesList.size()>0) {
+                    if(isRefresh){
+                        if(dishAdapter.mDishList!=null && dishAdapter.mDishList.size()>0){
+                            dishAdapter.mDishList.clear();
+                        }
+                        dishAdapter.mDishList.addAll(dishesList);
+                        isRefresh= false;
+                    }else{
+                        dishAdapter = new DishAdapter(mContext, false);
+                        dishAdapter.mDishList.addAll(dishesList);
+                    }
+                    dishListView.setAdapter(dishAdapter);
+                    dishAdapter.notifyDataSetChanged();
+                } else {
+                    Toast.makeText(mContext, "Network connection is wrong.", Toast.LENGTH_SHORT).show();
+                }
             }
         });
+    }
+
+    private void getLocalDishesData(){
+        List<DishBean> localDishList = (List<DishBean>)ObjectPersistence.readObjectFromFile(mContext, DISHES_DATA_PATH);
+        if(localDishList !=null ){
+            dishesList = localDishList;
+        }
     }
 }

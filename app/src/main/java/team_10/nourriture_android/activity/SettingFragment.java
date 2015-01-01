@@ -1,8 +1,10 @@
 package team_10.nourriture_android.activity;
 
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -11,8 +13,12 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.Toast;
 
+import java.util.Date;
+
 import team_10.nourriture_android.R;
 import team_10.nourriture_android.application.MyApplication;
+import team_10.nourriture_android.utils.GlobalParams;
+import team_10.nourriture_android.utils.SharedPreferencesUtil;
 
 
 /**
@@ -41,12 +47,18 @@ public class SettingFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 AlertDialog.Builder dialog=new AlertDialog.Builder(getActivity());
-                dialog.setTitle("Confirm exit").setIcon(android.R.drawable.ic_dialog_info).setMessage("Do you really want to exit").setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                dialog.setTitle("Confirm exit").setIcon(android.R.drawable.ic_dialog_info)
+                        .setMessage("Do you really want to exit?")
+                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         // clear login information
                         MyApplication.getInstance().clearUserBean();
                         MyApplication.getInstance().islogin = false;
+                        SharedPreferences sp = getActivity().getSharedPreferences(GlobalParams.TAG_LOGIN_PREFERENCES, Context.MODE_PRIVATE);
+                        SharedPreferences.Editor editor = sp.edit();
+                        editor.putBoolean(SharedPreferencesUtil.TAG_IS_LOGIN, false);
+                        editor.commit();
                         Toast.makeText(getActivity(), "exit successfully", Toast.LENGTH_SHORT).show();
                         exit_btn.setVisibility(View.GONE);
                     }

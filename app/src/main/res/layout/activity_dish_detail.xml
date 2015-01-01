@@ -78,6 +78,7 @@
                     android:background="@drawable/favor_selector"/>
 
                 <TextView
+                    android:id="@+id/tv_favor_num"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="5dp"
@@ -101,6 +102,7 @@
                     android:src="@drawable/comment_dish" />
 
                 <TextView
+                    android:id="@+id/tv_comment_num"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"

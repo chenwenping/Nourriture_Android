@@ -20,6 +20,7 @@ public class SharedPreferencesUtil {
     public static final String TAG_AUTO_LOGIN_BOOL = "auto_login";
     public static final String TAG_USER_NAME = "USER_NAME";
     public static final String TAG_PASSWORD = "SAVE_PASSWORD";
+    public static final String TAG_IS_LOGIN = "IS_LOGIN";
     public static final String TAG_LOGIN_CHECK = "USER_TIME_CHECK";
     public static final String TAG_LOGIN_TIME = "USER_TIME";
     public static final String TAG_USER_TOKEN ="TAG_USER_TOKEN";
@@ -29,19 +30,35 @@ public class SharedPreferencesUtil {
      * @param context
      * @param uid
      * @param pwd
-     * @param isAutLogin
+     * @param isLogin
      */
-    public static synchronized void saveLogin(Context context, String uid, String pwd, boolean isAutLogin){
-        SharedPreferences sp=context.getSharedPreferences(GlobalParams.TAG_GOBAL_SHARE_PREFERENCES, Context.MODE_PRIVATE);
+    public static synchronized void saveLogin(Context context, String uid, String pwd, boolean isLogin){
+        SharedPreferences sp=context.getSharedPreferences(GlobalParams.TAG_LOGIN_PREFERENCES, Context.MODE_PRIVATE);
         Date d = new Date();
         Editor editor = sp.edit();
         editor.putString(TAG_USER_NAME, uid);
         editor.putString(TAG_PASSWORD, pwd);
+        editor.putBoolean(TAG_IS_LOGIN, isLogin);
         editor.putLong(TAG_LOGIN_TIME, d.getTime());
 //        editor.putString(TAG_USER_TOKEN, token);
-        editor.putBoolean(TAG_AUTO_LOGIN_BOOL, isAutLogin);
+//        editor.putBoolean(TAG_AUTO_LOGIN_BOOL, isAutLogin);
         editor.commit();
     }
+
+    /*public static synchronized String getUserName(Context context){
+        SharedPreferences sp=context.getSharedPreferences(GlobalParams.TAG_GOBAL_SHARE_PREFERENCES, Context.MODE_PRIVATE);
+        return sp.getString(TAG_USER_NAME, "");
+    }
+
+    public static synchronized String getPassword(Context context){
+        SharedPreferences sp=context.getSharedPreferences(GlobalParams.TAG_GOBAL_SHARE_PREFERENCES, Context.MODE_PRIVATE);
+        return sp.getString(TAG_PASSWORD, "");
+    }
+
+    public static synchronized boolean getIsLogin(Context context){
+        SharedPreferences sp=context.getSharedPreferences(GlobalParams.TAG_GOBAL_SHARE_PREFERENCES, Context.MODE_PRIVATE);
+        return sp.getBoolean(TAG_IS_LOGIN, false);
+    }*/
 
     public static synchronized String getToken(Context context){
         SharedPreferences sp=context.getSharedPreferences(GlobalParams.TAG_GOBAL_SHARE_PREFERENCES, Context.MODE_PRIVATE);
