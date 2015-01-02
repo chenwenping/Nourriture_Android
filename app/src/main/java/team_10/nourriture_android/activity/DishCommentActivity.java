@@ -64,7 +64,7 @@ public class DishCommentActivity extends ActionBarActivity implements SwipeRefre
     private SharedPreferences sp;
     private int request = 3;
 
-    private static final String DISH_COMMENTS_DATA_PATH="_dish_comments_data.bean";
+    private static final String DISH_COMMENTS_DATA_PATH = "_dish_comments_data.bean";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

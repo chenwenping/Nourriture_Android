@@ -1,11 +1,14 @@
 package team_10.nourriture_android.adapter;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -28,8 +31,10 @@ public class DishAdapter extends BaseAdapter {
     private LayoutInflater mInflater;
     private Context mContext;
     private boolean isUpdate = false;
+    private boolean isUserDish = false;
 
     public List<DishBean> mDishList = new ArrayList<DishBean>();
+    private DishViewHolder dvh = null;
 
     public DishAdapter(Context context,  List<DishBean> dishList) {
         mInflater = LayoutInflater.from(context);
@@ -43,9 +48,15 @@ public class DishAdapter extends BaseAdapter {
         isUpdate = update;
     }
 
+    public DishAdapter(Context context, boolean update, boolean userDish) {
+        mInflater = LayoutInflater.from(context);
+        mContext = context;
+        isUpdate = update;
+        isUserDish = userDish;
+    }
+
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        DishViewHolder dvh = null;
         if (convertView == null) {
             convertView = mInflater.inflate(R.layout.item_dish, null);
             dvh = new DishViewHolder();
@@ -59,7 +70,6 @@ public class DishAdapter extends BaseAdapter {
             dvh = (DishViewHolder) convertView.getTag();
         }
 
-//        DishBean obj = mDishList.get(position);
         final DishBean dishBean = (DishBean) mDishList.get(position);
         dvh.name.setText(dishBean.getName());
         dvh.description.setText(dishBean.getDescription());
@@ -85,6 +95,35 @@ public class DishAdapter extends BaseAdapter {
                 mContext.startActivity(intent);
             }
         });
+
+        if(isUserDish){
+            dvh.dish_item_rl.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View v) {
+                    DishBean dishBean = (DishBean) v.getTag();
+
+                    AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
+                    builder.setTitle("Confirm delete");
+                    builder.setIcon(android.R.drawable.ic_dialog_info);
+                    builder.setMessage("Do you really want to delete the dish ?");
+                    builder.setPositiveButton("yes", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            // delete the dish.
+                            //deleteUserDish(dishBean);
+                        }
+                    });
+                    builder.setNegativeButton("cancel", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.cancel();
+                        }
+                    });
+                    builder.create().show();
+                    return true;
+                }
+            });
+        }
 
         return convertView;
     }

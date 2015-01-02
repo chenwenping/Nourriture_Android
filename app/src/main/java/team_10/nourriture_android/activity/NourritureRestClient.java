@@ -21,6 +21,10 @@ public class NourritureRestClient {
         client.post(getAbsoluteUrl(url), params, responseHandler);
     }
 
+    public static void delete(String url, AsyncHttpResponseHandler responseHandler){
+        client.delete(getAbsoluteUrl(url), responseHandler);
+    }
+
     private static String getAbsoluteUrl(String relativeUrl) {
         return BASE_URL + relativeUrl;
     }

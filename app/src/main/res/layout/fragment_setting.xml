@@ -24,37 +24,41 @@
         android:layout_margin="5dp"
         android:orientation="vertical" >
 
-        <RelativeLayout
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="60dp"
-            android:gravity="center"
             android:layout_marginTop="5dp"
+            android:gravity="center_vertical"
             android:background="@drawable/item">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp"
+                android:src="@drawable/setting" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_margin="10dp"
-                android:gravity="center_vertical"
                 android:text="Modify Password"
                 android:textColor="@color/black"
                 android:textSize="@dimen/text_big"/>
 
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:layout_marginTop="5dp"
+            android:gravity="center_vertical"
+            android:background="@drawable/item">
+
             <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignParentRight="true"
-                android:layout_margin="5dp"
-                android:src="@drawable/arrow" />
-
-        </RelativeLayout>
-
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="60dp"
-            android:gravity="center"
-            android:layout_marginTop="5dp"
-            android:background="@drawable/item">
+                android:layout_margin="10dp"
+                android:src="@drawable/setting" />
 
             <TextView
                 android:layout_width="wrap_content"
@@ -65,21 +69,20 @@
                 android:textColor="@color/black"
                 android:textSize="@dimen/text_big"/>
 
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:layout_marginTop="5dp"
+            android:gravity="center_vertical"
+            android:background="@drawable/item">
+
             <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignParentRight="true"
-                android:layout_margin="5dp"
-                android:src="@drawable/arrow" />
-
-        </RelativeLayout>
-
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="60dp"
-            android:gravity="center"
-            android:layout_marginTop="5dp"
-            android:background="@drawable/item">
+                android:layout_margin="10dp"
+                android:src="@drawable/setting" />
 
             <TextView
                 android:layout_width="wrap_content"
@@ -90,21 +93,20 @@
                 android:textColor="@color/black"
                 android:textSize="@dimen/text_big"/>
 
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:layout_marginTop="5dp"
+            android:gravity="center_vertical"
+            android:background="@drawable/item">
+
             <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignParentRight="true"
-                android:layout_margin="5dp"
-                android:src="@drawable/arrow" />
-
-        </RelativeLayout>
-
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="60dp"
-            android:gravity="center"
-            android:layout_marginTop="5dp"
-            android:background="@drawable/item">
+                android:layout_margin="10dp"
+                android:src="@drawable/setting" />
 
             <TextView
                 android:layout_width="wrap_content"
@@ -115,21 +117,20 @@
                 android:textColor="@color/black"
                 android:textSize="@dimen/text_big"/>
 
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:layout_marginTop="5dp"
+            android:gravity="center_vertical"
+            android:background="@drawable/item">
+
             <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignParentRight="true"
-                android:layout_margin="5dp"
-                android:src="@drawable/arrow" />
-
-        </RelativeLayout>
-
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="60dp"
-            android:gravity="center"
-            android:layout_marginTop="5dp"
-            android:background="@drawable/item">
+                android:layout_margin="10dp"
+                android:src="@drawable/setting" />
 
             <TextView
                 android:layout_width="wrap_content"
@@ -140,20 +141,15 @@
                 android:textColor="@color/black"
                 android:textSize="@dimen/text_big"/>
 
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentRight="true"
-                android:layout_margin="5dp"
-                android:src="@drawable/arrow" />
-
-        </RelativeLayout>
+        </LinearLayout>
 
         <Button
             android:id="@+id/btn_exit"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="5dp"
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="5dp"
+            android:layout_marginTop="20dp"
             android:background="@drawable/login_btn"
             android:gravity="center"
             android:textColor="@color/white"

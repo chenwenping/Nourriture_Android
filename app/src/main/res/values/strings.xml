@@ -10,13 +10,16 @@
     <string name="login">Login</string>
     <string name="exit">Exit</string>
     <string name="discover">Discover</string>
-    <string name="back">Back</string>
     <string name="dish">Dish</string>
+    <string name="notification">Notification</string>
+    <string name="setting">Setting</string>
+    <string name="back">Back</string>
     <string name="dish_detail">Dish detail</string>
     <string name="dish_add">Add Dish</string>
     <string name="dish_comment">Comment</string>
     <string name="favor_dishes">Favor Dishes</string>
     <string name="friends">Friends</string>
-    <string name="setting">Setting</string>
+    <string name="user_comment">My Comment</string>
+    <string name="login_tip">please login first</string>
 
 </resources>

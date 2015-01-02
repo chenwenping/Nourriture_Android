@@ -99,7 +99,7 @@
                 android:drawableTop="@drawable/tab_dish_selector"
                 android:gravity="center"
                 android:paddingTop="5dp"
-                android:text="Discover"
+                android:text="@string/discover"
                 android:textColor="@color/white"
                 android:textSize="10sp" />
 
@@ -120,7 +120,7 @@
                 android:drawableTop="@drawable/tab_dish_selector"
                 android:gravity="center"
                 android:paddingTop="5dp"
-                android:text="@string/discover"
+                android:text="@string/dish"
                 android:textColor="@color/white"
                 android:textSize="10sp" />
 
@@ -167,7 +167,7 @@
                 android:drawableTop="@drawable/tab_notification_selector"
                 android:gravity="center"
                 android:paddingTop="5dp"
-                android:text="@string/discover"
+                android:text="@string/notification"
                 android:textColor="@color/white"
                 android:textSize="10sp" />
 
@@ -201,7 +201,7 @@
                 android:drawableTop="@drawable/tab_setting_selector"
                 android:gravity="center"
                 android:paddingTop="5dp"
-                android:text="@string/discover"
+                android:text="@string/setting"
                 android:textColor="@color/white"
                 android:textSize="10sp" />
         </RelativeLayout>
