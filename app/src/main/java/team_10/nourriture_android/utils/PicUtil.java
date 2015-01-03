@@ -276,7 +276,7 @@ public class PicUtil {
 
     // 获得圆角图片的方法
     public static Bitmap getRoundedCornerBitmap(Bitmap bitmap, float roundPx) {
-        if(bitmap == null){
+        if (bitmap == null) {
             return null;
         }
 

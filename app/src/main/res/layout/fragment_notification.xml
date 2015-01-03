@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@drawable/title_nav_bar" >
+        android:background="@drawable/title_nav_bar">
 
         <TextView
             style="@style/title_text_style"
@@ -20,9 +21,9 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="5dp"
         android:layout_marginLeft="5dp"
         android:layout_marginRight="5dp"
-        android:layout_marginBottom="5dp"
         android:layout_marginTop="10dp"
         android:background="@drawable/item"
         android:orientation="vertical">
@@ -30,16 +31,16 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal" >
+            android:orientation="horizontal">
 
             <ImageView
                 android:id="@+id/photo_img"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp"
                 android:layout_marginLeft="5dp"
                 android:layout_marginRight="5dp"
                 android:layout_marginTop="10dp"
-                android:layout_marginBottom="10dp"
                 android:src="@drawable/default_avatar" />
 
             <RelativeLayout
@@ -53,11 +54,11 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_margin="10dp"
-                    android:padding="10dp"
                     android:background="@drawable/login_button"
+                    android:padding="10dp"
+                    android:text="@string/login_tip"
                     android:textColor="@color/white"
-                    android:textSize="@dimen/text_big"
-                    android:text="@string/login_tip" />
+                    android:textSize="@dimen/text_big" />
 
             </RelativeLayout>
 
@@ -78,19 +79,19 @@
 
                 <TextView
                     android:id="@+id/birth_tv"
-                    android:layout_toRightOf="@+id/name_tv"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="20dp"
+                    android:layout_toRightOf="@+id/name_tv"
                     android:text="1992-11-24"
                     android:textColor="@color/black"
                     android:textSize="@dimen/text_main" />
 
                 <TextView
                     android:id="@+id/introduction_tv"
-                    android:layout_below="@+id/name_tv"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_below="@+id/name_tv"
                     android:layout_marginLeft="10dp"
                     android:layout_marginTop="10dp"
                     android:text="Description: "
@@ -145,8 +146,8 @@
             android:id="@+id/ll_dishes_comment"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:background="@drawable/item">
+            android:background="@drawable/item"
+            android:orientation="horizontal">
 
             <ImageView
                 android:layout_width="wrap_content"
@@ -157,11 +158,11 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="10dp"
                 android:layout_gravity="center_vertical"
+                android:layout_marginLeft="10dp"
                 android:text="Dish Comments"
                 android:textColor="@color/black"
-                android:textSize="@dimen/text_main"/>
+                android:textSize="@dimen/text_main" />
 
         </LinearLayout>
 
@@ -169,8 +170,8 @@
             android:id="@+id/ll_favor_dishes"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:background="@drawable/item">
+            android:background="@drawable/item"
+            android:orientation="horizontal">
 
             <ImageView
                 android:layout_width="wrap_content"
@@ -181,11 +182,11 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="10dp"
                 android:layout_gravity="center_vertical"
+                android:layout_marginLeft="10dp"
                 android:text="Favor Dishes"
                 android:textColor="@color/black"
-                android:textSize="@dimen/text_main"/>
+                android:textSize="@dimen/text_main" />
 
         </LinearLayout>
 
@@ -193,8 +194,8 @@
             android:id="@+id/ll_my_friends"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:background="@drawable/item">
+            android:background="@drawable/item"
+            android:orientation="horizontal">
 
             <ImageView
                 android:layout_width="wrap_content"
@@ -205,11 +206,11 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="10dp"
                 android:layout_gravity="center_vertical"
+                android:layout_marginLeft="10dp"
                 android:text="My Friends"
                 android:textColor="@color/black"
-                android:textSize="@dimen/text_main"/>
+                android:textSize="@dimen/text_main" />
 
         </LinearLayout>
 

@@ -10,70 +10,70 @@
         android:layout_height="fill_parent"
         android:layout_above="@+id/buttonBottomLayout" />
 
-   <!-- <LinearLayout
-        android:id="@+id/buttonBottomLayout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@drawable/item"
-        android:layout_alignParentBottom="true"
-        android:orientation="horizontal">
+    <!-- <LinearLayout
+         android:id="@+id/buttonBottomLayout"
+         android:layout_width="match_parent"
+         android:layout_height="wrap_content"
+         android:background="@drawable/item"
+         android:layout_alignParentBottom="true"
+         android:orientation="horizontal">
 
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:gravity="center_vertical"
-            android:layout_margin="5dp"
-            android:layout_weight="1">
+         <LinearLayout
+             android:layout_width="wrap_content"
+             android:layout_height="wrap_content"
+             android:gravity="center_vertical"
+             android:layout_margin="5dp"
+             android:layout_weight="1">
 
-            <Button
-                android:id="@+id/dishes_btn"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="@drawable/tab_dish_selector" />
-        </LinearLayout>
+             <Button
+                 android:id="@+id/dishes_btn"
+                 android:layout_width="wrap_content"
+                 android:layout_height="wrap_content"
+                 android:background="@drawable/tab_dish_selector" />
+         </LinearLayout>
 
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:gravity="center_vertical"
-            android:layout_margin="5dp"
-            android:layout_weight="1">
+         <LinearLayout
+             android:layout_width="wrap_content"
+             android:layout_height="wrap_content"
+             android:gravity="center_vertical"
+             android:layout_margin="5dp"
+             android:layout_weight="1">
 
-            <Button
-                android:id="@+id/myRecipees_btn"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="@drawable/tab_recipe_selector" />
-        </LinearLayout>
+             <Button
+                 android:id="@+id/myRecipees_btn"
+                 android:layout_width="wrap_content"
+                 android:layout_height="wrap_content"
+                 android:background="@drawable/tab_recipe_selector" />
+         </LinearLayout>
 
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:gravity="center_vertical"
-            android:layout_margin="5dp"
-            android:layout_weight="1">
+         <LinearLayout
+             android:layout_width="wrap_content"
+             android:layout_height="wrap_content"
+             android:gravity="center_vertical"
+             android:layout_margin="5dp"
+             android:layout_weight="1">
 
-            <Button
-                android:id="@+id/notification_btn"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="@drawable/tab_notification_selector" />
-        </LinearLayout>
+             <Button
+                 android:id="@+id/notification_btn"
+                 android:layout_width="wrap_content"
+                 android:layout_height="wrap_content"
+                 android:background="@drawable/tab_notification_selector" />
+         </LinearLayout>
 
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:gravity="center_vertical"
-            android:layout_margin="5dp"
-            android:layout_weight="1">
+         <LinearLayout
+             android:layout_width="wrap_content"
+             android:layout_height="wrap_content"
+             android:gravity="center_vertical"
+             android:layout_margin="5dp"
+             android:layout_weight="1">
 
-            <Button
-                android:id="@+id/setting_btn"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="@drawable/tab_setting_selector" />
-        </LinearLayout>
-    </LinearLayout>-->
+             <Button
+                 android:id="@+id/setting_btn"
+                 android:layout_width="wrap_content"
+                 android:layout_height="wrap_content"
+                 android:background="@drawable/tab_setting_selector" />
+         </LinearLayout>
+     </LinearLayout>-->
 
     <LinearLayout
         android:id="@+id/buttonBottomLayout"
@@ -87,7 +87,7 @@
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:gravity="center|bottom" >
+            android:gravity="center|bottom">
 
             <Button
                 android:id="@+id/dishes_btn"
@@ -110,7 +110,7 @@
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:gravity="center|bottom" >
+            android:gravity="center|bottom">
 
             <Button
                 android:id="@+id/myRecipes_btn"
@@ -191,7 +191,7 @@
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:gravity="center|bottom" >
+            android:gravity="center|bottom">
 
             <Button
                 android:id="@+id/setting_btn"

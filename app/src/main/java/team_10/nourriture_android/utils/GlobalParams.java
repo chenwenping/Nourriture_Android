@@ -17,9 +17,9 @@ public class GlobalParams {
             + "nourriture"
             + File.separator;
 
-    public static final String GXY_USER_DIR = GXY_ROOT_DIR+"user"+File.separator;
+    public static final String GXY_USER_DIR = GXY_ROOT_DIR + "user" + File.separator;
 
-    public static final String GXY_data_DIR = GXY_ROOT_DIR+"data"+File.separator;
+    public static final String GXY_data_DIR = GXY_ROOT_DIR + "data" + File.separator;
 
 //	public static final String MAIN_URL = "http://5.196.19.84:1337/json";
 
@@ -44,10 +44,10 @@ public class GlobalParams {
     /*
      * 从连接池中取连接的超时时间
      */
-    public static final int CONNMANAGERTIMEOUT=10*1000;
+    public static final int CONNMANAGERTIMEOUT = 10 * 1000;
     /* 连接超时 */
-    public static final int CONNECTIONTIMEOUT=10*1000;
+    public static final int CONNECTIONTIMEOUT = 10 * 1000;
     /* 请求超时 */
-    public static final int SOTIMEOUT=10*1000;
+    public static final int SOTIMEOUT = 10 * 1000;
 
 }

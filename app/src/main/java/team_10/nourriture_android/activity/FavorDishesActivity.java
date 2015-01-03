@@ -1,10 +1,8 @@
 package team_10.nourriture_android.activity;
 
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.PersistableBundle;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
@@ -52,18 +50,18 @@ public class FavorDishesActivity extends ActionBarActivity implements SwipeRefre
         getFavorDishes();
     }
 
-    public void initView(){
-        swipeLayout = (SwipeRefreshLayout)this.findViewById(R.id.swipe_refresh);
+    public void initView() {
+        swipeLayout = (SwipeRefreshLayout) this.findViewById(R.id.swipe_refresh);
         swipeLayout.setOnRefreshListener(this);
         //加载颜色是循环播放的，只要没有完成刷新就会一直循环，color1>color2>color3>color4
         swipeLayout.setColorScheme(android.R.color.holo_red_light, android.R.color.holo_green_light,
                 android.R.color.holo_blue_bright, android.R.color.holo_orange_light);
-        dishListView = (ListView)this.findViewById(R.id.dishListView);
-        back_btn = (Button)this.findViewById(R.id.btn_back);
+        dishListView = (ListView) this.findViewById(R.id.dishListView);
+        back_btn = (Button) this.findViewById(R.id.btn_back);
         back_btn.setOnClickListener(this);
     }
 
-    public void getFavorDishes(){
+    public void getFavorDishes() {
 
         NourritureRestClient.get("likes", null, new JsonHttpResponseHandler() {
 
@@ -74,17 +72,17 @@ public class FavorDishesActivity extends ActionBarActivity implements SwipeRefre
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
                 progress.dismiss();
-                if(statusCode == 200){
+                if (statusCode == 200) {
                     try {
                         dishesList = JsonTobean.getList(DishBean[].class, response.toString());
                         Log.i("ping", response.toString());
-                        if(isRefresh){
-                            if(dishAdapter.mDishList!=null && dishAdapter.mDishList.size()>0){
+                        if (isRefresh) {
+                            if (dishAdapter.mDishList != null && dishAdapter.mDishList.size() > 0) {
                                 dishAdapter.mDishList.clear();
                             }
                             dishAdapter.mDishList.addAll(dishesList);
-                            isRefresh= false;
-                        }else{
+                            isRefresh = false;
+                        } else {
                             dishAdapter = new DishAdapter(FavorDishesActivity.this, false);
                             dishAdapter.mDishList.addAll(dishesList);
                         }
@@ -93,7 +91,7 @@ public class FavorDishesActivity extends ActionBarActivity implements SwipeRefre
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
-                }else{
+                } else {
                     // cache
                     progress.dismiss();
                     Toast.makeText(FavorDishesActivity.this, "Network connection is wrong.", Toast.LENGTH_SHORT).show();
@@ -125,7 +123,7 @@ public class FavorDishesActivity extends ActionBarActivity implements SwipeRefre
 
     @Override
     public void onRefresh() {
-        if(!isRefresh){
+        if (!isRefresh) {
             isRefresh = true;
             new Handler().postDelayed(new Runnable() {
                 public void run() {
@@ -138,7 +136,7 @@ public class FavorDishesActivity extends ActionBarActivity implements SwipeRefre
 
     @Override
     public void onClick(View v) {
-        switch (v.getId()){
+        switch (v.getId()) {
             case R.id.btn_back:
                 finish();
                 break;

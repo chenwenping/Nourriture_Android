@@ -9,8 +9,8 @@ public class NourritureRestClient {
 
     private static AsyncHttpClient client = new AsyncHttpClient();
 
-    public static void addHeader(String param){
-        client.addHeader("Authorization",  param);
+    public static void addHeader(String param) {
+        client.addHeader("Authorization", param);
     }
 
     public static void get(String url, RequestParams params, AsyncHttpResponseHandler responseHandler) {
@@ -31,11 +31,11 @@ public class NourritureRestClient {
         client.post(getAbsoluteUrl(url), params, responseHandler);
     }
 
-    public static void delete(String url, AsyncHttpResponseHandler responseHandler){
+    public static void delete(String url, AsyncHttpResponseHandler responseHandler) {
         client.delete(getAbsoluteUrl(url), responseHandler);
     }
 
-    public static void deleteWithLogin(String url, String username, String password, AsyncHttpResponseHandler responseHandler){
+    public static void deleteWithLogin(String url, String username, String password, AsyncHttpResponseHandler responseHandler) {
         client.setBasicAuth(username, password);
         client.delete(getAbsoluteUrl(url), responseHandler);
     }

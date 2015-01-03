@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
-import android.util.Base64;
 import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
@@ -19,7 +18,6 @@ import com.loopj.android.http.JsonHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
 
 import org.apache.http.Header;
-import org.json.JSONArray;
 import org.json.JSONObject;
 
 import team_10.nourriture_android.R;
@@ -31,21 +29,19 @@ import team_10.nourriture_android.utils.SharedPreferencesUtil;
 /**
  * Created by ping on 2014/12/21.
  */
-public class DishAddActivity extends ActionBarActivity implements View.OnClickListener{
+public class DishAddActivity extends ActionBarActivity implements View.OnClickListener {
 
+    public static int KEY_ADD_DISH = 2;
     private EditText dish_name_et;
     private EditText dish_description_et;
     private Button dish_add_btn;
     private ImageView dish_picture;
     private Button back_btn;
-
     private String dish_name;
     private String dish_description;
     private SharedPreferences sp;
     private ProgressDialog progress;
-
     private DishBean dishBean;
-    public static int KEY_ADD_DISH = 2;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,19 +54,19 @@ public class DishAddActivity extends ActionBarActivity implements View.OnClickLi
         initView();
     }
 
-    public void initView(){
-        dish_name_et = (EditText)this.findViewById(R.id.et_dish_name);
-        dish_description_et = (EditText)this.findViewById(R.id.et_dish_description);
-        dish_add_btn = (Button)this.findViewById(R.id.btn_dish_add);
-        dish_picture = (ImageView)this.findViewById(R.id.img_dish_picture);
-        back_btn = (Button)this.findViewById(R.id.btn_back);
+    public void initView() {
+        dish_name_et = (EditText) this.findViewById(R.id.et_dish_name);
+        dish_description_et = (EditText) this.findViewById(R.id.et_dish_description);
+        dish_add_btn = (Button) this.findViewById(R.id.btn_dish_add);
+        dish_picture = (ImageView) this.findViewById(R.id.img_dish_picture);
+        back_btn = (Button) this.findViewById(R.id.btn_back);
 
         dish_add_btn.setOnClickListener(this);
         dish_picture.setOnClickListener(this);
         back_btn.setOnClickListener(this);
     }
 
-    public void addDish(String dish_name, String dish_description){
+    public void addDish(String dish_name, String dish_description) {
         RequestParams params = new RequestParams();
         params.put("name", dish_name);
         params.put("description", dish_description);
@@ -82,10 +78,10 @@ public class DishAddActivity extends ActionBarActivity implements View.OnClickLi
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                 Log.e("add dish", response.toString());
-                if(progress.isShowing()){
+                if (progress.isShowing()) {
                     progress.dismiss();
                 }
-                if(statusCode == 201){
+                if (statusCode == 201) {
                     try {
                         dishBean = JsonTobean.getBean(DishBean.class, response.toString());
                         Intent intent = new Intent();
@@ -94,10 +90,10 @@ public class DishAddActivity extends ActionBarActivity implements View.OnClickLi
                         intent.putExtras(bundle);
                         setResult(KEY_ADD_DISH, intent);
                         finish();
-                    } catch (Exception e){
+                    } catch (Exception e) {
                         e.printStackTrace();
                     }
-                }else {
+                } else {
                     Toast.makeText(getApplicationContext(), "Adding dish is wrong. Please try it again.", Toast.LENGTH_SHORT).show();
                 }
             }
@@ -112,20 +108,20 @@ public class DishAddActivity extends ActionBarActivity implements View.OnClickLi
 
     @Override
     public void onClick(View v) {
-        switch (v.getId()){
+        switch (v.getId()) {
             case R.id.btn_dish_add:
                 dish_name = dish_name_et.getText().toString().trim();
                 dish_description = dish_description_et.getText().toString().trim();
-                if(dish_name==null || "".equals(dish_name)){
+                if (dish_name == null || "".equals(dish_name)) {
                     dish_name_et.requestFocus();
                     Toast.makeText(this, "Please enter the dish name.", Toast.LENGTH_SHORT).show();
-                } else if(dish_description==null || "".equals(dish_description)){
+                } else if (dish_description == null || "".equals(dish_description)) {
                     dish_description_et.requestFocus();
                     Toast.makeText(this, "Please enter the dish description.", Toast.LENGTH_SHORT).show();
                 } else {
-                    InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
-                    imm.hideSoftInputFromWindow(dish_name_et.getWindowToken(),0); // 隐藏软键盘
-                    imm.hideSoftInputFromWindow(dish_description_et.getWindowToken(),0); // 隐藏软键盘
+                    InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                    imm.hideSoftInputFromWindow(dish_name_et.getWindowToken(), 0); // 隐藏软键盘
+                    imm.hideSoftInputFromWindow(dish_description_et.getWindowToken(), 0); // 隐藏软键盘
                     progress.setMessage("Add dish...");
                     progress.show();
                     addDish(dish_name, dish_description);

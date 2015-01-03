@@ -2,7 +2,6 @@ package team_10.nourriture_android.activity;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Base64;
@@ -17,7 +16,6 @@ import com.loopj.android.http.JsonHttpResponseHandler;
 
 import org.apache.http.Header;
 import org.json.JSONArray;
-import org.json.JSONObject;
 
 import java.util.List;
 
@@ -30,7 +28,7 @@ import team_10.nourriture_android.utils.SharedPreferencesUtil;
 /**
  * Created by ping on 2014/12/22.
  */
-public class LoginActivity extends ActionBarActivity implements View.OnClickListener{
+public class LoginActivity extends ActionBarActivity implements View.OnClickListener {
 
     public static final String TAG_USER_ACCOUNT = "user.s";
     public static int KEY_IS_LOGIN = 1;
@@ -52,25 +50,25 @@ public class LoginActivity extends ActionBarActivity implements View.OnClickList
         initView();
     }
 
-    public void initView(){
-        username_et = (EditText)this.findViewById(R.id.et_username);
-        password_et = (EditText)this.findViewById(R.id.et_password);
-        login_btn = (Button)this.findViewById(R.id.btn_login);
-        back_btn = (Button)this.findViewById(R.id.btn_back);
+    public void initView() {
+        username_et = (EditText) this.findViewById(R.id.et_username);
+        password_et = (EditText) this.findViewById(R.id.et_password);
+        login_btn = (Button) this.findViewById(R.id.btn_login);
+        back_btn = (Button) this.findViewById(R.id.btn_back);
         login_btn.setOnClickListener(this);
         back_btn.setOnClickListener(this);
     }
 
-    public void checkLogin(){
+    public void checkLogin() {
         username = username_et.getText().toString().trim();
         password = password_et.getText().toString().trim();
-        if(username==null || "".equals(username)){
+        if (username == null || "".equals(username)) {
             Toast.makeText(this, "Please enter the username.", Toast.LENGTH_SHORT).show();
             username_et.setFocusable(true);
-        }else if(password==null || "".equals(password)){
+        } else if (password == null || "".equals(password)) {
             Toast.makeText(this, "Please enter the password.", Toast.LENGTH_SHORT).show();
             password_et.setFocusable(true);
-        }else {
+        } else {
             progress = new ProgressDialog(this);
             progress.setMessage("Login...");
             progress.show();
@@ -78,19 +76,19 @@ public class LoginActivity extends ActionBarActivity implements View.OnClickList
         }
     }
 
-    public void login(){
+    public void login() {
         String str = username + ":" + password;
         String encodeStr = Base64.encodeToString(str.getBytes(), Base64.DEFAULT);
         String loginStr = "Basic " + encodeStr;
         NourritureRestClient.addHeader(loginStr);
-        NourritureRestClient.post("login", null, new JsonHttpResponseHandler(){
+        NourritureRestClient.post("login", null, new JsonHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
                 Log.e("login", response.toString());
-                if(progress.isShowing()){
+                if (progress.isShowing()) {
                     progress.dismiss();
                 }
-                if(statusCode == 200){
+                if (statusCode == 200) {
                     try {
                         userList = JsonTobean.getList(UserBean[].class, response.toString());
                         MyApplication.getInstance().updateOrSaveUserBean(userList.get(0));
@@ -100,10 +98,10 @@ public class LoginActivity extends ActionBarActivity implements View.OnClickList
                         Intent intent = new Intent();
                         setResult(KEY_IS_LOGIN, intent);
                         finish();
-                    }catch (Exception e){
+                    } catch (Exception e) {
                         e.printStackTrace();
                     }
-                }else{
+                } else {
                     username_et.setText(null);
                     password_et.setText(null);
                     username_et.requestFocus();
@@ -113,7 +111,7 @@ public class LoginActivity extends ActionBarActivity implements View.OnClickList
 
             @Override
             public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-                if(progress.isShowing()){
+                if (progress.isShowing()) {
                     progress.dismiss();
                 }
                 username_et.setText(null);
@@ -126,7 +124,7 @@ public class LoginActivity extends ActionBarActivity implements View.OnClickList
 
     @Override
     public void onClick(View v) {
-        switch (v.getId()){
+        switch (v.getId()) {
             case R.id.btn_login:
                 checkLogin();
                 break;
@@ -140,7 +138,7 @@ public class LoginActivity extends ActionBarActivity implements View.OnClickList
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
-        if (keyCode == KeyEvent.KEYCODE_BACK){
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
             finish();
             return true;
         }

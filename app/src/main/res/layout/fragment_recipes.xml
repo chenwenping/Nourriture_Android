@@ -7,7 +7,7 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@drawable/title_nav_bar" >
+        android:background="@drawable/title_nav_bar">
 
         <TextView
             style="@style/title_text_style"
@@ -22,8 +22,8 @@
         android:id="@+id/ll_user_dish_login"
         android:layout_width="fill_parent"
         android:layout_height="200dp"
-        android:background="@drawable/item"
         android:layout_margin="5dp"
+        android:background="@drawable/item"
         android:gravity="center"
         android:orientation="vertical">
 
@@ -40,25 +40,25 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="10dp"
-            android:padding="10dp"
             android:background="@drawable/login_button"
+            android:padding="10dp"
+            android:text="@string/login_tip"
             android:textColor="@color/white"
-            android:textSize="@dimen/text_big"
-            android:text="@string/login_tip" />
+            android:textSize="@dimen/text_big" />
 
     </LinearLayout>
 
     <android.support.v4.widget.SwipeRefreshLayout
         android:id="@+id/swipe_refresh"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" >
+        android:layout_height="match_parent">
 
         <ListView
             android:id="@+id/dishListView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:divider="@color/white"
-            android:longClickable="true"/>
+            android:longClickable="true" />
 
     </android.support.v4.widget.SwipeRefreshLayout>
 

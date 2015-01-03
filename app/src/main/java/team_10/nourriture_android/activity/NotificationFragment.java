@@ -39,7 +39,7 @@ import team_10.nourriture_android.utils.SharedPreferencesUtil;
 /**
  * Created by ping on 2014/12/20.
  */
-public class NotificationFragment extends Fragment implements View.OnClickListener{
+public class NotificationFragment extends Fragment implements View.OnClickListener {
 
     private RelativeLayout rl_user_login, rl_user_info;
     private Button btn_login;
@@ -75,15 +75,15 @@ public class NotificationFragment extends Fragment implements View.OnClickListen
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        rl_user_login = (RelativeLayout)getActivity().findViewById(R.id.user_login_rl);
-        rl_user_info = (RelativeLayout)getActivity().findViewById(R.id.user_info_rl);
-        btn_login = (Button)getActivity().findViewById(R.id.login_btn);
-        img_photo = (ImageView)getActivity().findViewById(R.id.photo_img);
-        tv_name = (TextView)getActivity().findViewById(R.id.name_tv);
-        tv_birth = (TextView)getActivity().findViewById(R.id.birth_tv);
-        tv_introduction = (TextView)getActivity().findViewById(R.id.introduction_tv);
+        rl_user_login = (RelativeLayout) getActivity().findViewById(R.id.user_login_rl);
+        rl_user_info = (RelativeLayout) getActivity().findViewById(R.id.user_info_rl);
+        btn_login = (Button) getActivity().findViewById(R.id.login_btn);
+        img_photo = (ImageView) getActivity().findViewById(R.id.photo_img);
+        tv_name = (TextView) getActivity().findViewById(R.id.name_tv);
+        tv_birth = (TextView) getActivity().findViewById(R.id.birth_tv);
+        tv_introduction = (TextView) getActivity().findViewById(R.id.introduction_tv);
 
-        if(isLogin){
+        if (isLogin) {
             rl_user_login.setVisibility(View.GONE);
             rl_user_info.setVisibility(View.VISIBLE);
 
@@ -91,19 +91,19 @@ public class NotificationFragment extends Fragment implements View.OnClickListen
             tv_name.setText(userBean.getUsername());
             tv_introduction.setText(userBean.getIntroduction());
             AsynImageLoader asynImageLoader = new AsynImageLoader();
-            if(userBean.getPicture()==null || "".equals(userBean.getPicture().trim()) || "null".equals(userBean.getPicture().trim())){
+            if (userBean.getPicture() == null || "".equals(userBean.getPicture().trim()) || "null".equals(userBean.getPicture().trim())) {
                 img_photo.setImageResource(R.drawable.default_avatar);
-            }else{
+            } else {
                 asynImageLoader.showImageAsyn(img_photo, userBean.getPicture(), R.drawable.default_avatar);
             }
-        }else{
+        } else {
             rl_user_info.setVisibility(View.GONE);
             rl_user_login.setVisibility(View.VISIBLE);
         }
 
-        ll_dishes_comment = (LinearLayout)getActivity().findViewById(R.id.ll_dishes_comment);
-        ll_favor_dishes = (LinearLayout)getActivity().findViewById(R.id.ll_favor_dishes);
-        ll_my_friends = (LinearLayout)getActivity().findViewById(R.id.ll_my_friends);
+        ll_dishes_comment = (LinearLayout) getActivity().findViewById(R.id.ll_dishes_comment);
+        ll_favor_dishes = (LinearLayout) getActivity().findViewById(R.id.ll_favor_dishes);
+        ll_my_friends = (LinearLayout) getActivity().findViewById(R.id.ll_my_friends);
 
         btn_login.setOnClickListener(this);
         ll_dishes_comment.setOnClickListener(this);
@@ -117,16 +117,16 @@ public class NotificationFragment extends Fragment implements View.OnClickListen
 
     @Override
     public void onClick(View v) {
-        switch (v.getId()){
+        switch (v.getId()) {
             case R.id.login_btn:
                 Intent intent = new Intent(getActivity().getApplicationContext(), LoginActivity.class);
                 startActivityForResult(intent, request);
                 break;
             case R.id.ll_dishes_comment:
-                if(isLogin){
+                if (isLogin) {
                     Intent intent1 = new Intent(getActivity().getApplicationContext(), UserCommentActivity.class);
                     startActivity(intent1);
-                }else {
+                } else {
                     Toast.makeText(getActivity(), "Please login first", Toast.LENGTH_SHORT).show();
                     Intent intent1 = new Intent(getActivity().getApplicationContext(), LoginActivity.class);
                     //startActivity(intent);
@@ -134,10 +134,10 @@ public class NotificationFragment extends Fragment implements View.OnClickListen
                 }
                 break;
             case R.id.ll_favor_dishes:
-                if(isLogin){
+                if (isLogin) {
                     Intent intent2 = new Intent(getActivity().getApplicationContext(), FavorDishesActivity.class);
                     startActivity(intent2);
-                }else {
+                } else {
                     Toast.makeText(getActivity(), "Please login first", Toast.LENGTH_SHORT).show();
                     Intent intent2 = new Intent(getActivity().getApplicationContext(), LoginActivity.class);
                     //startActivity(intent);
@@ -145,10 +145,10 @@ public class NotificationFragment extends Fragment implements View.OnClickListen
                 }
                 break;
             case R.id.ll_my_friends:
-                if(isLogin){
+                if (isLogin) {
                     Intent intent3 = new Intent(getActivity().getApplicationContext(), FriendsActivity.class);
                     startActivity(intent3);
-                }else {
+                } else {
                     Toast.makeText(getActivity(), "Please login first", Toast.LENGTH_SHORT).show();
                     Intent intent3 = new Intent(getActivity().getApplicationContext(), LoginActivity.class);
                     //startActivity(intent);
@@ -163,7 +163,7 @@ public class NotificationFragment extends Fragment implements View.OnClickListen
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if(resultCode==LoginActivity.KEY_IS_LOGIN){
+        if (resultCode == LoginActivity.KEY_IS_LOGIN) {
             isLogin = true;
 
             rl_user_login.setVisibility(View.GONE);
@@ -172,16 +172,16 @@ public class NotificationFragment extends Fragment implements View.OnClickListen
             tv_name.setText(userBean.getUsername());
             tv_introduction.setText(userBean.getIntroduction());
             AsynImageLoader asynImageLoader = new AsynImageLoader();
-            if(userBean.getPicture()==null || "".equals(userBean.getPicture().trim()) || "null".equals(userBean.getPicture().trim())){
+            if (userBean.getPicture() == null || "".equals(userBean.getPicture().trim()) || "null".equals(userBean.getPicture().trim())) {
                 img_photo.setImageResource(R.drawable.default_avatar);
-            }else{
+            } else {
                 asynImageLoader.showImageAsyn(img_photo, userBean.getPicture(), R.drawable.default_avatar);
             }
         }
     }
 
-    private void notifications(){
-        NourritureRestClient.get("notifications", null, new JsonHttpResponseHandler(){
+    private void notifications() {
+        NourritureRestClient.get("notifications", null, new JsonHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
                 super.onSuccess(statusCode, headers, response);
@@ -195,14 +195,14 @@ public class NotificationFragment extends Fragment implements View.OnClickListen
         });
     }
 
-    private void getMyNotifications(){
+    private void getMyNotifications() {
         String userName = sp.getString(SharedPreferencesUtil.TAG_USER_NAME, "");
         String password = sp.getString(SharedPreferencesUtil.TAG_PASSWORD, "");
         String str = userName + ":" + password;
         String encodeStr = Base64.encodeToString(str.getBytes(), Base64.DEFAULT);
         String loginStr = "Basic " + encodeStr;
         NourritureRestClient.addHeader(loginStr);
-        NourritureRestClient.get("getMyNotifications", null, new JsonHttpResponseHandler(){
+        NourritureRestClient.get("getMyNotifications", null, new JsonHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
                 super.onSuccess(statusCode, headers, response);
@@ -216,18 +216,18 @@ public class NotificationFragment extends Fragment implements View.OnClickListen
         });
     }
 
-    private void getMyUnreadNotifications(){
+    private void getMyUnreadNotifications() {
         String userName = sp.getString(SharedPreferencesUtil.TAG_USER_NAME, "");
         String password = sp.getString(SharedPreferencesUtil.TAG_PASSWORD, "");
         String str = userName + ":" + password;
         String encodeStr = Base64.encodeToString(str.getBytes(), Base64.DEFAULT);
         String loginStr = "Basic " + encodeStr;
         NourritureRestClient.addHeader(loginStr);
-        NourritureRestClient.get("getMyUnreadNotifications", null, new JsonHttpResponseHandler(){
+        NourritureRestClient.get("getMyUnreadNotifications", null, new JsonHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
                 Log.e("getMyUnreadNotifications", response.toString());
-                if(statusCode == 200) {
+                if (statusCode == 200) {
                     try {
                         notificationList = JsonTobean.getList(NotificationBean[].class, response.toString());
                         dishNotificationList = new ArrayList<>();
@@ -235,17 +235,17 @@ public class NotificationFragment extends Fragment implements View.OnClickListen
                         friendNotificationList = new ArrayList<>();
                         rankNotificationList = new ArrayList<>();
                         messageNotificationList = new ArrayList<>();
-                        if(notificationList!=null && notificationList.size()>0){
-                            for(int i=0; i<notificationList.size(); i++){
-                                if("dish".equals(notificationList.get(i).getTargetType())){
+                        if (notificationList != null && notificationList.size() > 0) {
+                            for (int i = 0; i < notificationList.size(); i++) {
+                                if ("dish".equals(notificationList.get(i).getTargetType())) {
                                     dishNotificationList.add(notificationList.get(i));
-                                }else if("comment".equals(notificationList.get(i).getTargetType())){
+                                } else if ("comment".equals(notificationList.get(i).getTargetType())) {
                                     commentNotificationList.add(notificationList.get(i));
-                                }else if("friend".equals(notificationList.get(i).getTargetType())){
+                                } else if ("friend".equals(notificationList.get(i).getTargetType())) {
                                     friendNotificationList.add(notificationList.get(i));
-                                }else if("rank".equals(notificationList.get(i).getTargetType())){
+                                } else if ("rank".equals(notificationList.get(i).getTargetType())) {
                                     rankNotificationList.add(notificationList.get(i));
-                                }else if("message".equals(notificationList.get(i).getTargetType())){
+                                } else if ("message".equals(notificationList.get(i).getTargetType())) {
                                     messageNotificationList.add(notificationList.get(i));
                                 }
                             }

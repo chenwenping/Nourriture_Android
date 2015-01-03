@@ -1,7 +1,6 @@
 package team_10.nourriture_android.bean;
 
 import java.io.Serializable;
-import java.util.Date;
 
 /**
  * Created by ping on 2014/12/28.

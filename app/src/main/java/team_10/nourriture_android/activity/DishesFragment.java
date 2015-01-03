@@ -40,13 +40,13 @@ import team_10.nourriture_android.utils.SharedPreferencesUtil;
 
 public class DishesFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener, View.OnClickListener {
 
+    private static final String DISHES_DATA_PATH = "_dishes_data.bean";
     private List<DishBean> dishesList;
     private SwipeRefreshLayout swipeLayout;
     private ListView dishListView;
     private DishAdapter dishAdapter;
     private ProgressDialog progress;
     private boolean isRefresh = false;
-
     private Button addDish_btn;
     private EditText search_et;
     private Button search_btn;
@@ -57,13 +57,10 @@ public class DishesFragment extends Fragment implements SwipeRefreshLayout.OnRef
     private boolean afterChangeHaveText = true;
     private int searchIconDefault; // default search icon
     private int searchIconClear; // clear search text icon
-
     private Context mContext;
     private boolean isLogin = false;
     private int request = 1;
     private DishBean dishAddBean; // the dish added by user
-
-    private static final String DISHES_DATA_PATH = "_dishes_data.bean";
     private SharedPreferences sp;
 
     @Override
@@ -81,17 +78,17 @@ public class DishesFragment extends Fragment implements SwipeRefreshLayout.OnRef
         super.onActivityCreated(savedInstanceState);
         mContext = getActivity();
 
-        addDish_btn = (Button)getActivity().findViewById(R.id.btn_add_dish);
+        addDish_btn = (Button) getActivity().findViewById(R.id.btn_add_dish);
         searchIconDefault = R.drawable.search_icon;
         searchIconClear = R.drawable.search_delete;
-        search_btn = (Button)getActivity().findViewById(R.id.btn_search);
-        search_et = (EditText)getActivity().findViewById(R.id.et_search_text);
+        search_btn = (Button) getActivity().findViewById(R.id.btn_search);
+        search_et = (EditText) getActivity().findViewById(R.id.et_search_text);
         search_et.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                if(search_et.getText() != null){
+                if (search_et.getText() != null) {
                     beforeChangeHaveText = true;
-                }else{
+                } else {
                     beforeChangeHaveText = false;
                 }
             }
@@ -103,15 +100,15 @@ public class DishesFragment extends Fragment implements SwipeRefreshLayout.OnRef
 
             @Override
             public void afterTextChanged(Editable s) {
-                if(search_et.getText().toString().trim()!=null && !"".equals(search_et.getText().toString().trim())){
+                if (search_et.getText().toString().trim() != null && !"".equals(search_et.getText().toString().trim())) {
                     afterChangeHaveText = true;
-                }else{
+                } else {
                     isSearch = true;
                     search_content = "";
                     getSearchDishList();
                     afterChangeHaveText = false;
                 }
-                if(beforeChangeHaveText && afterChangeHaveText){
+                if (beforeChangeHaveText && afterChangeHaveText) {
                     isSearch = true;
                     search_btn.setBackgroundResource(searchIconDefault);
                 }
@@ -120,12 +117,12 @@ public class DishesFragment extends Fragment implements SwipeRefreshLayout.OnRef
         addDish_btn.setOnClickListener(this);
         search_btn.setOnClickListener(this);
 
-        swipeLayout = (SwipeRefreshLayout)getActivity().findViewById(R.id.swipe_refresh);
+        swipeLayout = (SwipeRefreshLayout) getActivity().findViewById(R.id.swipe_refresh);
         swipeLayout.setOnRefreshListener(this);
         //加载颜色是循环播放的，只要没有完成刷新就会一直循环，color1>color2>color3>color4
         swipeLayout.setColorScheme(android.R.color.holo_red_light, android.R.color.holo_green_light,
                 android.R.color.holo_blue_bright, android.R.color.holo_orange_light);
-        dishListView = (ListView)getActivity().findViewById(R.id.dishListView);
+        dishListView = (ListView) getActivity().findViewById(R.id.dishListView);
 
         sp = getActivity().getSharedPreferences(GlobalParams.TAG_LOGIN_PREFERENCES, Context.MODE_PRIVATE);
 
@@ -138,40 +135,40 @@ public class DishesFragment extends Fragment implements SwipeRefreshLayout.OnRef
 
     @Override
     public void onClick(View v) {
-        switch (v.getId()){
+        switch (v.getId()) {
             case R.id.btn_add_dish:
                 //isLogin = MyApplication.getInstance().isLogin();
                 isLogin = sp.getBoolean(SharedPreferencesUtil.TAG_IS_LOGIN, false);
                 Log.e("isLogin", String.valueOf(isLogin));
-                if(isLogin){
+                if (isLogin) {
                     Intent intent = new Intent(getActivity(), DishAddActivity.class);
                     //startActivity(intent);
                     startActivityForResult(intent, request);
-                }else{
+                } else {
                     Intent intent = new Intent(getActivity(), LoginActivity.class);
                     //startActivity(intent);
                     startActivityForResult(intent, request);
                 }
                 break;
             case R.id.btn_search:
-                if(isSearch){
+                if (isSearch) {
                     search_content = search_et.getText().toString().trim();
-                    if(search_content==null||"".equals(search_content)){
+                    if (search_content == null || "".equals(search_content)) {
                         Toast.makeText(getActivity(), "Please enter the search content.", Toast.LENGTH_SHORT).show();
-                    }else{
+                    } else {
                         isSearch = false;
                         search_content = search_content.replaceAll(" ", "");
                         getSearchDishList();
                         search_btn.setBackgroundResource(searchIconClear);
                     }
-                }else{
+                } else {
                     search_et.setText("");
                     isSearch = true;
                     search_btn.setBackgroundResource(searchIconDefault);
                     search_content = "";
                     getSearchDishList();
                 }
-                InputMethodManager imm = (InputMethodManager)getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+                InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
                 imm.hideSoftInputFromWindow(search_et.getWindowToken(), 0);
                 break;
             default:
@@ -179,23 +176,23 @@ public class DishesFragment extends Fragment implements SwipeRefreshLayout.OnRef
         }
     }
 
-    public void getSearchDishList(){
+    public void getSearchDishList() {
         searchDishList = new ArrayList<>();
-        if(dishesList!=null && dishesList.size()>0){
-            for(int i=0; i<dishesList.size(); i++){
+        if (dishesList != null && dishesList.size() > 0) {
+            for (int i = 0; i < dishesList.size(); i++) {
                 DishBean dishBean = dishesList.get(i);
-                if(dishBean.getName().contains(search_content) || search_content.contains(dishBean.getName())){
+                if (dishBean.getName().contains(search_content) || search_content.contains(dishBean.getName())) {
                     searchDishList.add(dishBean);
                 }
             }
-            if(searchDishList!=null && searchDishList.size()>0){
-                if(dishAdapter.mDishList!=null && dishAdapter.mDishList.size()>0){
+            if (searchDishList != null && searchDishList.size() > 0) {
+                if (dishAdapter.mDishList != null && dishAdapter.mDishList.size() > 0) {
                     dishAdapter.mDishList.clear();
                 }
                 dishAdapter.mDishList.addAll(searchDishList);
                 dishListView.setAdapter(dishAdapter);
                 dishAdapter.notifyDataSetChanged();
-            } else{
+            } else {
                 // search result no dish.
                 search_et.setText("");
                 search_et.requestFocus();
@@ -209,9 +206,9 @@ public class DishesFragment extends Fragment implements SwipeRefreshLayout.OnRef
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if(resultCode==LoginActivity.KEY_IS_LOGIN){
+        if (resultCode == LoginActivity.KEY_IS_LOGIN) {
             isLogin = true;
-        } else if(resultCode==DishAddActivity.KEY_ADD_DISH){
+        } else if (resultCode == DishAddActivity.KEY_ADD_DISH) {
             isRefresh = true;
             getAllDishes();
         }
@@ -219,7 +216,7 @@ public class DishesFragment extends Fragment implements SwipeRefreshLayout.OnRef
 
     @Override
     public void onRefresh() {
-        if(!isRefresh){
+        if (!isRefresh) {
             isRefresh = true;
             new Handler().postDelayed(new Runnable() {
                 public void run() {
@@ -235,22 +232,22 @@ public class DishesFragment extends Fragment implements SwipeRefreshLayout.OnRef
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
                 Log.e("dishes", response.toString());
-                if(progress.isShowing()){
+                if (progress.isShowing()) {
                     progress.dismiss();
                 }
-                if(statusCode == 200){
+                if (statusCode == 200) {
                     try {
                         dishesList = JsonTobean.getList(DishBean[].class, response.toString());
                         Collections.reverse(dishesList);
                         ObjectPersistence.writeObjectToFile(mContext, dishesList, DISHES_DATA_PATH);
-                        if(isRefresh){
+                        if (isRefresh) {
                             //dishAdapter = new DishAdapter(getActivity(), dishesList);
-                            if(dishAdapter.mDishList!=null && dishAdapter.mDishList.size()>0){
+                            if (dishAdapter.mDishList != null && dishAdapter.mDishList.size() > 0) {
                                 dishAdapter.mDishList.clear();
                             }
                             dishAdapter.mDishList.addAll(dishesList);
-                            isRefresh= false;
-                        }else{
+                            isRefresh = false;
+                        } else {
                             dishAdapter = new DishAdapter(mContext, false);
                             dishAdapter.mDishList.addAll(dishesList);
                         }
@@ -259,16 +256,16 @@ public class DishesFragment extends Fragment implements SwipeRefreshLayout.OnRef
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
-                }else{
+                } else {
                     getLocalDishesData();
-                    if (dishesList != null && dishesList.size()>0) {
-                        if(isRefresh){
-                            if(dishAdapter.mDishList!=null && dishAdapter.mDishList.size()>0){
+                    if (dishesList != null && dishesList.size() > 0) {
+                        if (isRefresh) {
+                            if (dishAdapter.mDishList != null && dishAdapter.mDishList.size() > 0) {
                                 dishAdapter.mDishList.clear();
                             }
                             dishAdapter.mDishList.addAll(dishesList);
-                            isRefresh= false;
-                        }else{
+                            isRefresh = false;
+                        } else {
                             dishAdapter = new DishAdapter(mContext, false);
                             dishAdapter.mDishList.addAll(dishesList);
                         }
@@ -282,18 +279,18 @@ public class DishesFragment extends Fragment implements SwipeRefreshLayout.OnRef
 
             @Override
             public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
-                if(progress.isShowing()){
+                if (progress.isShowing()) {
                     progress.dismiss();
                 }
                 getLocalDishesData();
-                if (dishesList != null && dishesList.size()>0) {
-                    if(isRefresh){
-                        if(dishAdapter.mDishList!=null && dishAdapter.mDishList.size()>0){
+                if (dishesList != null && dishesList.size() > 0) {
+                    if (isRefresh) {
+                        if (dishAdapter.mDishList != null && dishAdapter.mDishList.size() > 0) {
                             dishAdapter.mDishList.clear();
                         }
                         dishAdapter.mDishList.addAll(dishesList);
-                        isRefresh= false;
-                    }else{
+                        isRefresh = false;
+                    } else {
                         dishAdapter = new DishAdapter(mContext, false);
                         dishAdapter.mDishList.addAll(dishesList);
                     }
@@ -306,9 +303,9 @@ public class DishesFragment extends Fragment implements SwipeRefreshLayout.OnRef
         });
     }
 
-    private void getLocalDishesData(){
-        List<DishBean> localDishList = (List<DishBean>)ObjectPersistence.readObjectFromFile(mContext, DISHES_DATA_PATH);
-        if(localDishList !=null ){
+    private void getLocalDishesData() {
+        List<DishBean> localDishList = (List<DishBean>) ObjectPersistence.readObjectFromFile(mContext, DISHES_DATA_PATH);
+        if (localDishList != null) {
             dishesList = localDishList;
         }
     }

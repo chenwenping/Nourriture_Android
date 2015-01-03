@@ -4,7 +4,6 @@ import android.os.Environment;
 import android.util.Log;
 
 import java.io.File;
-import java.io.IOException;
 
 /**
  * Created by ping on 2014/12/24.
@@ -13,7 +12,7 @@ public class FileUtil {
 
     private static final String TAG = "FileUtil";
 
-    public static File getCacheFile(String imageUri){
+    public static File getCacheFile(String imageUri) {
         File cacheFile = null;
         try {
             if (Environment.getExternalStorageState().equals(

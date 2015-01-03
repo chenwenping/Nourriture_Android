@@ -38,6 +38,7 @@ import team_10.nourriture_android.utils.ObjectPersistence;
  */
 public class UserCommentActivity extends ActionBarActivity implements SwipeRefreshLayout.OnRefreshListener, View.OnClickListener {
 
+    private static final String USER_COMMENTS_DATA_PATH = "_user_comments_data.bean";
     private UserBean userBean;
     private List<CommentBean> commentList;
     private List<CommentBean> userCommentList;
@@ -48,8 +49,6 @@ public class UserCommentActivity extends ActionBarActivity implements SwipeRefre
     private ListView commentListView;
     private boolean isRefresh = false;
     private ProgressDialog progress;
-
-    private static final String USER_COMMENTS_DATA_PATH="_user_comments_data.bean";
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -68,17 +67,17 @@ public class UserCommentActivity extends ActionBarActivity implements SwipeRefre
         getUserCommentList();
     }
 
-    public void initView(){
-        swipeLayout = (SwipeRefreshLayout)this.findViewById(R.id.swipe_refresh);
+    public void initView() {
+        swipeLayout = (SwipeRefreshLayout) this.findViewById(R.id.swipe_refresh);
         swipeLayout.setOnRefreshListener(this);
         //加载颜色是循环播放的，只要没有完成刷新就会一直循环，color1>color2>color3>color4
         swipeLayout.setColorScheme(android.R.color.holo_red_light, android.R.color.holo_green_light,
                 android.R.color.holo_blue_bright, android.R.color.holo_orange_light);
-        commentListView = (ListView)this.findViewById(R.id.commentListView);
+        commentListView = (ListView) this.findViewById(R.id.commentListView);
         commentListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view, final int position, long id) {
-                final CommentBean commentBean = (CommentBean)commentAdapter.getItem(position);
+                final CommentBean commentBean = (CommentBean) commentAdapter.getItem(position);
 
                 AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
                 builder.setTitle("Confirm delete");
@@ -104,26 +103,26 @@ public class UserCommentActivity extends ActionBarActivity implements SwipeRefre
             }
         });
 
-        back_btn = (Button)this.findViewById(R.id.btn_back);
+        back_btn = (Button) this.findViewById(R.id.btn_back);
         back_btn.setOnClickListener(this);
     }
 
-    public void getUserCommentList(){
-        NourritureRestClient.get("comments", null, new JsonHttpResponseHandler(){
+    public void getUserCommentList() {
+        NourritureRestClient.get("comments", null, new JsonHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
                 Log.e("commentList", response.toString());
-                if(progress.isShowing()){
+                if (progress.isShowing()) {
                     progress.dismiss();
                 }
-                if(statusCode == 200) {
+                if (statusCode == 200) {
                     try {
                         commentList = JsonTobean.getList(CommentBean[].class, response.toString());
                         userCommentList = new ArrayList<>();
-                        if(commentList!=null && commentList.size()>0){
-                            for(int i=0; i<commentList.size(); i++){
+                        if (commentList != null && commentList.size() > 0) {
+                            for (int i = 0; i < commentList.size(); i++) {
                                 CommentBean commentBean = commentList.get(i);
-                                if((commentBean.getUser()).equals(userBean.get_id())){
+                                if ((commentBean.getUser()).equals(userBean.get_id())) {
                                     userCommentList.add(commentBean);
                                 }
                             }
@@ -131,7 +130,7 @@ public class UserCommentActivity extends ActionBarActivity implements SwipeRefre
                         Collections.reverse(userCommentList);
                         ObjectPersistence.writeObjectToFile(mContext, userCommentList, USER_COMMENTS_DATA_PATH);
                         if (isRefresh) {
-                            if(commentAdapter.mCommentList!=null && commentAdapter.mCommentList.size()>0){
+                            if (commentAdapter.mCommentList != null && commentAdapter.mCommentList.size() > 0) {
                                 commentAdapter.mCommentList.clear();
                             }
                             commentAdapter.mCommentList.addAll(userCommentList);
@@ -145,10 +144,10 @@ public class UserCommentActivity extends ActionBarActivity implements SwipeRefre
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
-                }else{
+                } else {
                     getLocalCommentsData();
                     if (isRefresh) {
-                        if(commentAdapter.mCommentList!=null && commentAdapter.mCommentList.size()>0){
+                        if (commentAdapter.mCommentList != null && commentAdapter.mCommentList.size() > 0) {
                             commentAdapter.mCommentList.clear();
                         }
                         commentAdapter.mCommentList.addAll(userCommentList);
@@ -164,12 +163,12 @@ public class UserCommentActivity extends ActionBarActivity implements SwipeRefre
 
             @Override
             public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
-                if(progress.isShowing()){
+                if (progress.isShowing()) {
                     progress.dismiss();
                 }
                 getLocalCommentsData();
                 if (isRefresh) {
-                    if(commentAdapter.mCommentList!=null && commentAdapter.mCommentList.size()>0){
+                    if (commentAdapter.mCommentList != null && commentAdapter.mCommentList.size() > 0) {
                         commentAdapter.mCommentList.clear();
                     }
                     commentAdapter.mCommentList.addAll(userCommentList);
@@ -184,7 +183,7 @@ public class UserCommentActivity extends ActionBarActivity implements SwipeRefre
         });
     }
 
-    public void deleteUserComment(CommentBean commentBean){
+    public void deleteUserComment(CommentBean commentBean) {
         String url = "comments/" + commentBean.get_id();
         NourritureRestClient.delete(url, new JsonHttpResponseHandler() {
             @Override
@@ -213,7 +212,7 @@ public class UserCommentActivity extends ActionBarActivity implements SwipeRefre
 
     @Override
     public void onRefresh() {
-        if(!isRefresh){
+        if (!isRefresh) {
             isRefresh = true;
             new Handler().postDelayed(new Runnable() {
                 public void run() {
@@ -226,7 +225,7 @@ public class UserCommentActivity extends ActionBarActivity implements SwipeRefre
 
     @Override
     public void onClick(View v) {
-        switch (v.getId()){
+        switch (v.getId()) {
             case R.id.btn_back:
                 finish();
                 break;
@@ -235,9 +234,9 @@ public class UserCommentActivity extends ActionBarActivity implements SwipeRefre
         }
     }
 
-    private void getLocalCommentsData(){
+    private void getLocalCommentsData() {
         List<CommentBean> localCommentList = (List<CommentBean>) ObjectPersistence.readObjectFromFile(mContext, USER_COMMENTS_DATA_PATH);
-        if(localCommentList !=null ){
+        if (localCommentList != null) {
             commentList = localCommentList;
         }
     }

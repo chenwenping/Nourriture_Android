@@ -27,7 +27,7 @@ public class UserBean implements Serializable {
     private String[] problems;
     private String[] friends;
 
-    public void initUserBean(UserBean userBean){
+    public void initUserBean(UserBean userBean) {
         this._id = userBean._id;
         this.username = userBean.username;
         this.password = userBean.password;
@@ -46,9 +46,13 @@ public class UserBean implements Serializable {
         this.friends = userBean.friends;
     }
 
-    public String get_id() { return _id; }
+    public String get_id() {
+        return _id;
+    }
 
-    public void set_id(String _id) { this._id = _id; }
+    public void set_id(String _id) {
+        this._id = _id;
+    }
 
     public String getUsername() {
         return username;
@@ -162,7 +166,11 @@ public class UserBean implements Serializable {
         this.problems = problems;
     }
 
-    public String[] getFriends() { return friends; }
+    public String[] getFriends() {
+        return friends;
+    }
 
-    public void setFriends(String[] friends) { this.friends = friends; }
+    public void setFriends(String[] friends) {
+        this.friends = friends;
+    }
 }

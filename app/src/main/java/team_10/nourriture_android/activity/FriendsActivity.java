@@ -3,9 +3,7 @@ package team_10.nourriture_android.activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.os.PersistableBundle;
 import android.support.v7.app.ActionBarActivity;
-import android.util.Base64;
 import android.util.Log;
 
 import com.loopj.android.http.JsonHttpResponseHandler;
@@ -33,14 +31,14 @@ public class FriendsActivity extends ActionBarActivity {
         getFriends();
     }
 
-    public void getFriends(){
+    public void getFriends() {
         String userName = sp.getString(SharedPreferencesUtil.TAG_USER_NAME, "");
         String password = sp.getString(SharedPreferencesUtil.TAG_PASSWORD, "");
        /* String str = userName + ":" + password;
         String encodeStr = Base64.encodeToString(str.getBytes(), Base64.DEFAULT);
         String loginStr = "Basic " + encodeStr;
         NourritureRestClient.addHeader(loginStr);*/
-        NourritureRestClient.getWithLogin("getMyFriend", null, userName, password, new JsonHttpResponseHandler(){
+        NourritureRestClient.getWithLogin("getMyFriend", null, userName, password, new JsonHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                 super.onSuccess(statusCode, headers, response);
