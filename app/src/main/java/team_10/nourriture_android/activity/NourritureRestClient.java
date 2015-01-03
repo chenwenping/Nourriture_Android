@@ -17,11 +17,26 @@ public class NourritureRestClient {
         client.get(getAbsoluteUrl(url), params, responseHandler);
     }
 
+    public static void getWithLogin(String url, RequestParams params, String username, String password, AsyncHttpResponseHandler responseHandler) {
+        client.setBasicAuth(username, password);
+        client.get(getAbsoluteUrl(url), params, responseHandler);
+    }
+
     public static void post(String url, RequestParams params, AsyncHttpResponseHandler responseHandler) {
         client.post(getAbsoluteUrl(url), params, responseHandler);
     }
 
+    public static void postWithLogin(String url, RequestParams params, String username, String password, AsyncHttpResponseHandler responseHandler) {
+        client.setBasicAuth(username, password);
+        client.post(getAbsoluteUrl(url), params, responseHandler);
+    }
+
     public static void delete(String url, AsyncHttpResponseHandler responseHandler){
+        client.delete(getAbsoluteUrl(url), responseHandler);
+    }
+
+    public static void deleteWithLogin(String url, String username, String password, AsyncHttpResponseHandler responseHandler){
+        client.setBasicAuth(username, password);
         client.delete(getAbsoluteUrl(url), responseHandler);
     }
 

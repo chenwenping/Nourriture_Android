@@ -29,6 +29,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import team_10.nourriture_android.R;
@@ -149,20 +150,23 @@ public class RecipesFragment extends Fragment implements SwipeRefreshLayout.OnRe
         NourritureRestClient.get("dishes", null, new JsonHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
+                Log.e("user dish", response.toString());
                 if(progress.isShowing()){
                     progress.dismiss();
                 }
                 if(statusCode == 200){
                     try {
                         dishesList = JsonTobean.getList(DishBean[].class, response.toString());
-                        Log.i("ping", response.toString());
                         userDishList = new ArrayList<>();
-                        for(int i=0; i<dishesList.size(); i++){
-                            DishBean dishBean = dishesList.get(i);
-                            if((dishBean.getUser()).equals(userBean.get_id())){
-                                userDishList.add(dishBean);
+                        if(dishesList!=null && dishesList.size()>0){
+                            for(int i=0; i<dishesList.size(); i++){
+                                DishBean dishBean = dishesList.get(i);
+                                if((dishBean.getUser()).equals(userBean.get_id())){
+                                    userDishList.add(dishBean);
+                                }
                             }
                         }
+                        Collections.reverse(userDishList);
                         ObjectPersistence.writeObjectToFile(mContext, userDishList, USER_DISHES_DATA_PATH);
                         if(isRefresh){
                             if(dishAdapter.mDishList!=null && dishAdapter.mDishList.size()>0){

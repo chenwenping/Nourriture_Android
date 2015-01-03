@@ -39,7 +39,7 @@ public class LoginActivity extends ActionBarActivity implements View.OnClickList
     private EditText password_et;
     private Button login_btn;
     private Button back_btn;
-    private String userName;
+    private String username;
     private String password;
     private UserBean userBean;
     private List<UserBean> userList;
@@ -62,9 +62,9 @@ public class LoginActivity extends ActionBarActivity implements View.OnClickList
     }
 
     public void checkLogin(){
-        userName = username_et.getText().toString().trim();
+        username = username_et.getText().toString().trim();
         password = password_et.getText().toString().trim();
-        if(userName==null || "".equals(userName)){
+        if(username==null || "".equals(username)){
             Toast.makeText(this, "Please enter the username.", Toast.LENGTH_SHORT).show();
             username_et.setFocusable(true);
         }else if(password==null || "".equals(password)){
@@ -79,21 +79,23 @@ public class LoginActivity extends ActionBarActivity implements View.OnClickList
     }
 
     public void login(){
-        String str = userName + ":" + password;
+        String str = username + ":" + password;
         String encodeStr = Base64.encodeToString(str.getBytes(), Base64.DEFAULT);
         String loginStr = "Basic " + encodeStr;
         NourritureRestClient.addHeader(loginStr);
         NourritureRestClient.post("login", null, new JsonHttpResponseHandler(){
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
-                progress.dismiss();
+                Log.e("login", response.toString());
+                if(progress.isShowing()){
+                    progress.dismiss();
+                }
                 if(statusCode == 200){
                     try {
-                        Log.e("login", response.toString());
                         userList = JsonTobean.getList(UserBean[].class, response.toString());
                         MyApplication.getInstance().updateOrSaveUserBean(userList.get(0));
                         MyApplication.getInstance().islogin = true;
-                        SharedPreferencesUtil.saveLogin(getBaseContext(), userName, password, true);
+                        SharedPreferencesUtil.saveLogin(getBaseContext(), username, password, true);
                         Toast.makeText(LoginActivity.this, "Login Success.", Toast.LENGTH_SHORT).show();
                         Intent intent = new Intent();
                         setResult(KEY_IS_LOGIN, intent);
@@ -111,7 +113,9 @@ public class LoginActivity extends ActionBarActivity implements View.OnClickList
 
             @Override
             public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-                progress.dismiss();
+                if(progress.isShowing()){
+                    progress.dismiss();
+                }
                 username_et.setText(null);
                 password_et.setText(null);
                 username_et.requestFocus();

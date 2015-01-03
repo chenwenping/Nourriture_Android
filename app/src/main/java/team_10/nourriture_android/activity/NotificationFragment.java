@@ -23,9 +23,14 @@ import org.apache.http.Header;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import team_10.nourriture_android.R;
 import team_10.nourriture_android.application.MyApplication;
+import team_10.nourriture_android.bean.NotificationBean;
 import team_10.nourriture_android.bean.UserBean;
+import team_10.nourriture_android.jsonTobean.JsonTobean;
 import team_10.nourriture_android.utils.AsynImageLoader;
 import team_10.nourriture_android.utils.GlobalParams;
 import team_10.nourriture_android.utils.SharedPreferencesUtil;
@@ -45,6 +50,13 @@ public class NotificationFragment extends Fragment implements View.OnClickListen
     private boolean isLogin = false;
     private SharedPreferences sp;
     private int request = 2;
+
+    private List<NotificationBean> notificationList;
+    private List<NotificationBean> dishNotificationList;
+    private List<NotificationBean> commentNotificationList;
+    private List<NotificationBean> friendNotificationList;
+    private List<NotificationBean> rankNotificationList;
+    private List<NotificationBean> messageNotificationList;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -76,7 +88,6 @@ public class NotificationFragment extends Fragment implements View.OnClickListen
             rl_user_info.setVisibility(View.VISIBLE);
 
             userBean = MyApplication.getInstance().getUserBeanFromFile();
-            Log.e("userBean", userBean.getUsername());
             tv_name.setText(userBean.getUsername());
             tv_introduction.setText(userBean.getIntroduction());
             AsynImageLoader asynImageLoader = new AsynImageLoader();
@@ -158,7 +169,6 @@ public class NotificationFragment extends Fragment implements View.OnClickListen
             rl_user_login.setVisibility(View.GONE);
             rl_user_info.setVisibility(View.VISIBLE);
             userBean = MyApplication.getInstance().getUserBeanFromFile();
-            Log.e("userBean", userBean.getUsername());
             tv_name.setText(userBean.getUsername());
             tv_introduction.setText(userBean.getIntroduction());
             AsynImageLoader asynImageLoader = new AsynImageLoader();
@@ -216,8 +226,34 @@ public class NotificationFragment extends Fragment implements View.OnClickListen
         NourritureRestClient.get("getMyUnreadNotifications", null, new JsonHttpResponseHandler(){
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
-                super.onSuccess(statusCode, headers, response);
                 Log.e("getMyUnreadNotifications", response.toString());
+                if(statusCode == 200) {
+                    try {
+                        notificationList = JsonTobean.getList(NotificationBean[].class, response.toString());
+                        dishNotificationList = new ArrayList<>();
+                        commentNotificationList = new ArrayList<>();
+                        friendNotificationList = new ArrayList<>();
+                        rankNotificationList = new ArrayList<>();
+                        messageNotificationList = new ArrayList<>();
+                        if(notificationList!=null && notificationList.size()>0){
+                            for(int i=0; i<notificationList.size(); i++){
+                                if("dish".equals(notificationList.get(i).getTargetType())){
+                                    dishNotificationList.add(notificationList.get(i));
+                                }else if("comment".equals(notificationList.get(i).getTargetType())){
+                                    commentNotificationList.add(notificationList.get(i));
+                                }else if("friend".equals(notificationList.get(i).getTargetType())){
+                                    friendNotificationList.add(notificationList.get(i));
+                                }else if("rank".equals(notificationList.get(i).getTargetType())){
+                                    rankNotificationList.add(notificationList.get(i));
+                                }else if("message".equals(notificationList.get(i).getTargetType())){
+                                    messageNotificationList.add(notificationList.get(i));
+                                }
+                            }
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
             }
 
             @Override

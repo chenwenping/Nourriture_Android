@@ -36,11 +36,11 @@ public class FriendsActivity extends ActionBarActivity {
     public void getFriends(){
         String userName = sp.getString(SharedPreferencesUtil.TAG_USER_NAME, "");
         String password = sp.getString(SharedPreferencesUtil.TAG_PASSWORD, "");
-        String str = userName + ":" + password;
+       /* String str = userName + ":" + password;
         String encodeStr = Base64.encodeToString(str.getBytes(), Base64.DEFAULT);
         String loginStr = "Basic " + encodeStr;
-        NourritureRestClient.addHeader(loginStr);
-        NourritureRestClient.get("getMyFriend", null, new JsonHttpResponseHandler(){
+        NourritureRestClient.addHeader(loginStr);*/
+        NourritureRestClient.getWithLogin("getMyFriend", null, userName, password, new JsonHttpResponseHandler(){
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                 super.onSuccess(statusCode, headers, response);

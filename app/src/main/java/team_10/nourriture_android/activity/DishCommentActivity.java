@@ -11,6 +11,7 @@ import android.support.v7.app.ActionBarActivity;
 import android.util.Base64;
 import android.util.Log;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
@@ -47,6 +48,7 @@ public class DishCommentActivity extends ActionBarActivity implements SwipeRefre
 
     private DishBean dishBean;
     private List<CommentBean> commentList;
+    private CommentBean commentAddBean;
     private Context mContext;
 
     private CommentAdapter commentAdapter;
@@ -112,6 +114,8 @@ public class DishCommentActivity extends ActionBarActivity implements SwipeRefre
                     if(dish_comment==null || "".equals(dish_comment)){
                         Toast.makeText(DishCommentActivity.this, "Please enter the comment content.", Toast.LENGTH_SHORT).show();
                     }else{
+                        InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+                        imm.hideSoftInputFromWindow(dish_comment_et.getWindowToken(),0); // 隐藏软键盘
                         progress.setMessage("Comment...");
                         progress.show();
                         addComment(dish_comment);
@@ -152,17 +156,16 @@ public class DishCommentActivity extends ActionBarActivity implements SwipeRefre
 
     public void getAllComments(){
         String url = "getCommentsFromDish/" + dishBean.get_id();
-        Log.e("url", url);
         NourritureRestClient.get(url, null, new JsonHttpResponseHandler(){
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
+                Log.e("commentList", response.toString());
                 if(progress.isShowing()){
                     progress.dismiss();
                 }
                 if(statusCode == 200) {
                     try {
                         commentList = JsonTobean.getList(CommentBean[].class, response.toString());
-                        Log.e("commentList", response.toString());
                         ObjectPersistence.writeObjectToFile(mContext, commentList, dishBean.get_id() + DISH_COMMENTS_DATA_PATH);
                         if (commentList == null || commentList.size() == 0) {
                             no_comment_tv.setVisibility(View.VISIBLE);
@@ -246,43 +249,36 @@ public class DishCommentActivity extends ActionBarActivity implements SwipeRefre
         RequestParams params = new RequestParams();
         params.put("dish", dishBean.get_id());
         params.put("content", dish_comment);
-        Log.e("dish", dishBean.get_id());
-        Log.e("content", dish_comment);
-        String userName = sp.getString(SharedPreferencesUtil.TAG_USER_NAME, "");
-        String password = sp.getString(SharedPreferencesUtil.TAG_PASSWORD, "");
-        String str = userName + ":" + password;
-        Log.e("str", str);
-        String encodeStr = Base64.encodeToString(str.getBytes(), Base64.DEFAULT);
-        String loginStr = "Basic " + encodeStr;
-        NourritureRestClient.addHeader(loginStr);
 
-        NourritureRestClient.post("comments", params, new JsonHttpResponseHandler(){
+        String username = sp.getString(SharedPreferencesUtil.TAG_USER_NAME, "");
+        String password = sp.getString(SharedPreferencesUtil.TAG_PASSWORD, "");
+
+        NourritureRestClient.postWithLogin("comments", params, username, password, new JsonHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                super.onSuccess(statusCode, headers, response);
                 Log.e("addComment", response.toString());
-                if(progress.isShowing()){
+                if (progress.isShowing()) {
                     progress.dismiss();
                 }
-            }
-
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
-                super.onSuccess(statusCode, headers, response);
-                Log.e("addComment", response.toString());
-                if(progress.isShowing()){
-                    progress.dismiss();
+                if (statusCode == 201) {
+                    try {
+                        commentAddBean = JsonTobean.getBean(CommentBean.class, response.toString());
+                        dish_comment_et.setText("");
+                        getAllComments();
+                    } catch (Exception e){
+                        e.printStackTrace();
+                    }
+                }else{
+                    Toast.makeText(getApplicationContext(), "Adding comment is wrong. Please try it again.", Toast.LENGTH_SHORT).show();
                 }
-            }
-
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, String responseString) {
-                super.onSuccess(statusCode, headers, responseString);
             }
 
             @Override
             public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
-                super.onFailure(statusCode, headers, throwable, errorResponse);
+                if (progress.isShowing()) {
+                    progress.dismiss();
+                }
+                Toast.makeText(getApplicationContext(), "Adding comment is wrong. Please try it again.", Toast.LENGTH_SHORT).show();
             }
         });
     }

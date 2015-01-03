@@ -2,12 +2,14 @@ package team_10.nourriture_android.activity;
 
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Base64;
 import android.util.Log;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -21,6 +23,8 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import team_10.nourriture_android.R;
+import team_10.nourriture_android.bean.DishBean;
+import team_10.nourriture_android.jsonTobean.JsonTobean;
 import team_10.nourriture_android.utils.GlobalParams;
 import team_10.nourriture_android.utils.SharedPreferencesUtil;
 
@@ -39,6 +43,9 @@ public class DishAddActivity extends ActionBarActivity implements View.OnClickLi
     private String dish_description;
     private SharedPreferences sp;
     private ProgressDialog progress;
+
+    private DishBean dishBean;
+    public static int KEY_ADD_DISH = 2;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,23 +75,37 @@ public class DishAddActivity extends ActionBarActivity implements View.OnClickLi
         params.put("name", dish_name);
         params.put("description", dish_description);
 
-        String userName = sp.getString(SharedPreferencesUtil.TAG_USER_NAME, "");
+        String username = sp.getString(SharedPreferencesUtil.TAG_USER_NAME, "");
         String password = sp.getString(SharedPreferencesUtil.TAG_PASSWORD, "");
-        String str = userName + ":" + password;
-        Log.e("str", str);
-        String encodeStr = Base64.encodeToString(str.getBytes(), Base64.DEFAULT);
-        String loginStr = "Basic " + encodeStr;
-        NourritureRestClient.addHeader(loginStr);
 
-        NourritureRestClient.post("dishes", params, new JsonHttpResponseHandler(){
+        NourritureRestClient.postWithLogin("dishes", params, username, password, new JsonHttpResponseHandler() {
             @Override
-            public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
-                super.onSuccess(statusCode, headers, response);
+            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                Log.e("add dish", response.toString());
+                if(progress.isShowing()){
+                    progress.dismiss();
+                }
+                if(statusCode == 201){
+                    try {
+                        dishBean = JsonTobean.getBean(DishBean.class, response.toString());
+                        Intent intent = new Intent();
+                        Bundle bundle = new Bundle();
+                        bundle.putSerializable("dishBean", dishBean);
+                        intent.putExtras(bundle);
+                        setResult(KEY_ADD_DISH, intent);
+                        finish();
+                    } catch (Exception e){
+                        e.printStackTrace();
+                    }
+                }else {
+                    Toast.makeText(getApplicationContext(), "Adding dish is wrong. Please try it again.", Toast.LENGTH_SHORT).show();
+                }
             }
 
             @Override
             public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
                 super.onFailure(statusCode, headers, throwable, errorResponse);
+                Toast.makeText(getApplicationContext(), "Adding dish is wrong. Please try it again.", Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -102,6 +123,9 @@ public class DishAddActivity extends ActionBarActivity implements View.OnClickLi
                     dish_description_et.requestFocus();
                     Toast.makeText(this, "Please enter the dish description.", Toast.LENGTH_SHORT).show();
                 } else {
+                    InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+                    imm.hideSoftInputFromWindow(dish_name_et.getWindowToken(),0); // 隐藏软键盘
+                    imm.hideSoftInputFromWindow(dish_description_et.getWindowToken(),0); // 隐藏软键盘
                     progress.setMessage("Add dish...");
                     progress.show();
                     addDish(dish_name, dish_description);

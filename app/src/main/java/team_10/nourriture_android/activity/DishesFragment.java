@@ -27,11 +27,11 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import team_10.nourriture_android.R;
 import team_10.nourriture_android.adapter.DishAdapter;
-import team_10.nourriture_android.application.MyApplication;
 import team_10.nourriture_android.bean.DishBean;
 import team_10.nourriture_android.jsonTobean.JsonTobean;
 import team_10.nourriture_android.utils.GlobalParams;
@@ -61,6 +61,7 @@ public class DishesFragment extends Fragment implements SwipeRefreshLayout.OnRef
     private Context mContext;
     private boolean isLogin = false;
     private int request = 1;
+    private DishBean dishAddBean; // the dish added by user
 
     private static final String DISHES_DATA_PATH = "_dishes_data.bean";
     private SharedPreferences sp;
@@ -144,7 +145,8 @@ public class DishesFragment extends Fragment implements SwipeRefreshLayout.OnRef
                 Log.e("isLogin", String.valueOf(isLogin));
                 if(isLogin){
                     Intent intent = new Intent(getActivity(), DishAddActivity.class);
-                    startActivity(intent);
+                    //startActivity(intent);
+                    startActivityForResult(intent, request);
                 }else{
                     Intent intent = new Intent(getActivity(), LoginActivity.class);
                     //startActivity(intent);
@@ -209,6 +211,9 @@ public class DishesFragment extends Fragment implements SwipeRefreshLayout.OnRef
         super.onActivityResult(requestCode, resultCode, data);
         if(resultCode==LoginActivity.KEY_IS_LOGIN){
             isLogin = true;
+        } else if(resultCode==DishAddActivity.KEY_ADD_DISH){
+            isRefresh = true;
+            getAllDishes();
         }
     }
 
@@ -229,13 +234,14 @@ public class DishesFragment extends Fragment implements SwipeRefreshLayout.OnRef
         NourritureRestClient.get("dishes", null, new JsonHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
+                Log.e("dishes", response.toString());
                 if(progress.isShowing()){
                     progress.dismiss();
                 }
                 if(statusCode == 200){
                     try {
                         dishesList = JsonTobean.getList(DishBean[].class, response.toString());
-                        Log.i("ping", response.toString());
+                        Collections.reverse(dishesList);
                         ObjectPersistence.writeObjectToFile(mContext, dishesList, DISHES_DATA_PATH);
                         if(isRefresh){
                             //dishAdapter = new DishAdapter(getActivity(), dishesList);
@@ -254,9 +260,6 @@ public class DishesFragment extends Fragment implements SwipeRefreshLayout.OnRef
                         e.printStackTrace();
                     }
                 }else{
-                    if(progress.isShowing()){
-                        progress.dismiss();
-                    }
                     getLocalDishesData();
                     if (dishesList != null && dishesList.size()>0) {
                         if(isRefresh){

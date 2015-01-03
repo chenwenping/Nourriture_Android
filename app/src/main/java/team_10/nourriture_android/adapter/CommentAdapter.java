@@ -83,17 +83,6 @@ public class CommentAdapter extends BaseAdapter {
         return convertView;
     }
 
-    public void getUser(){
-        String url = null;
-        NourritureRestClient.get(url, null, new JsonHttpResponseHandler(){
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-//                super.onSuccess(statusCode, headers, response);
-
-            }
-        });
-    }
-
     @Override
     public Object getItem(int position) {
         return mCommentList.get(position);
