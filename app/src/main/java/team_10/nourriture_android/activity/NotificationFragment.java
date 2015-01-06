@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.util.Base64;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -23,7 +22,9 @@ import org.apache.http.Header;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import team_10.nourriture_android.R;
@@ -33,6 +34,7 @@ import team_10.nourriture_android.bean.UserBean;
 import team_10.nourriture_android.jsonTobean.JsonTobean;
 import team_10.nourriture_android.utils.AsynImageLoader;
 import team_10.nourriture_android.utils.GlobalParams;
+import team_10.nourriture_android.utils.ObjectPersistence;
 import team_10.nourriture_android.utils.SharedPreferencesUtil;
 
 
@@ -41,22 +43,29 @@ import team_10.nourriture_android.utils.SharedPreferencesUtil;
  */
 public class NotificationFragment extends Fragment implements View.OnClickListener {
 
+    private static final String NOTIFICATION_DATA_PATH = "_notification_data.bean";
     private RelativeLayout rl_user_login, rl_user_info;
     private Button btn_login;
-    private TextView tv_name, tv_birth, tv_introduction;
+    private TextView tv_name, tv_birth, tv_introduction, tv_notification_num;
     private ImageView img_photo;
-    private LinearLayout ll_dishes_comment, ll_favor_dishes, ll_my_friends;
+    private LinearLayout ll_dishes_comment, ll_favor_dishes, ll_my_friends, ll_my_notification;
     private UserBean userBean;
     private boolean isLogin = false;
     private SharedPreferences sp;
     private int request = 2;
-
+    private int notification_num = 0;
     private List<NotificationBean> notificationList;
     private List<NotificationBean> dishNotificationList;
     private List<NotificationBean> commentNotificationList;
     private List<NotificationBean> friendNotificationList;
     private List<NotificationBean> rankNotificationList;
     private List<NotificationBean> messageNotificationList;
+    private List<NotificationBean> unReadNotificationList;
+    private List<NotificationBean> unReadDishNotificationList;
+    private List<NotificationBean> unReadCommentNotificationList;
+    private List<NotificationBean> unReadFiendNotificationList;
+    private List<NotificationBean> unReadRankNotificationList;
+    private List<NotificationBean> unReadMessageNotificationList;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -65,7 +74,6 @@ public class NotificationFragment extends Fragment implements View.OnClickListen
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        //isLogin = MyApplication.getInstance().isLogin();
         sp = getActivity().getSharedPreferences(GlobalParams.TAG_LOGIN_PREFERENCES, Context.MODE_PRIVATE);
         isLogin = sp.getBoolean(SharedPreferencesUtil.TAG_IS_LOGIN, false);
         return inflater.inflate(R.layout.fragment_notification, container, false);
@@ -82,6 +90,7 @@ public class NotificationFragment extends Fragment implements View.OnClickListen
         tv_name = (TextView) getActivity().findViewById(R.id.name_tv);
         tv_birth = (TextView) getActivity().findViewById(R.id.birth_tv);
         tv_introduction = (TextView) getActivity().findViewById(R.id.introduction_tv);
+        tv_notification_num = (TextView) getActivity().findViewById(R.id.notification_num_tv);
 
         if (isLogin) {
             rl_user_login.setVisibility(View.GONE);
@@ -104,14 +113,14 @@ public class NotificationFragment extends Fragment implements View.OnClickListen
         ll_dishes_comment = (LinearLayout) getActivity().findViewById(R.id.ll_dishes_comment);
         ll_favor_dishes = (LinearLayout) getActivity().findViewById(R.id.ll_favor_dishes);
         ll_my_friends = (LinearLayout) getActivity().findViewById(R.id.ll_my_friends);
+        ll_my_notification = (LinearLayout) getActivity().findViewById(R.id.ll_my_notification);
 
         btn_login.setOnClickListener(this);
         ll_dishes_comment.setOnClickListener(this);
         ll_favor_dishes.setOnClickListener(this);
         ll_my_friends.setOnClickListener(this);
+        ll_my_notification.setOnClickListener(this);
 
-        notifications();
-        getMyNotifications();
         getMyUnreadNotifications();
     }
 
@@ -148,6 +157,20 @@ public class NotificationFragment extends Fragment implements View.OnClickListen
                 if (isLogin) {
                     Intent intent3 = new Intent(getActivity().getApplicationContext(), FriendsActivity.class);
                     startActivity(intent3);
+                } else {
+                    Toast.makeText(getActivity(), "Please login first", Toast.LENGTH_SHORT).show();
+                    Intent intent3 = new Intent(getActivity().getApplicationContext(), LoginActivity.class);
+                    //startActivity(intent);
+                    startActivityForResult(intent3, request);
+                }
+                break;
+            case R.id.ll_my_notification:
+                if (isLogin) {
+                    if (notification_num > 0) {
+                        Intent intent3 = new Intent(getActivity().getApplicationContext(), NotificationActivity.class);
+                        intent3.putExtra("unReadNotificationList", (Serializable) unReadNotificationList);
+                        startActivity(intent3);
+                    }
                 } else {
                     Toast.makeText(getActivity(), "Please login first", Toast.LENGTH_SHORT).show();
                     Intent intent3 = new Intent(getActivity().getApplicationContext(), LoginActivity.class);
@@ -196,37 +219,12 @@ public class NotificationFragment extends Fragment implements View.OnClickListen
     }
 
     private void getMyNotifications() {
-        String userName = sp.getString(SharedPreferencesUtil.TAG_USER_NAME, "");
+        String username = sp.getString(SharedPreferencesUtil.TAG_USER_NAME, "");
         String password = sp.getString(SharedPreferencesUtil.TAG_PASSWORD, "");
-        String str = userName + ":" + password;
-        String encodeStr = Base64.encodeToString(str.getBytes(), Base64.DEFAULT);
-        String loginStr = "Basic " + encodeStr;
-        NourritureRestClient.addHeader(loginStr);
-        NourritureRestClient.get("getMyNotifications", null, new JsonHttpResponseHandler() {
+        NourritureRestClient.getWithLogin("getMyNotifications", null, username, password, new JsonHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
-                super.onSuccess(statusCode, headers, response);
                 Log.e("getMyNotifications", response.toString());
-            }
-
-            @Override
-            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
-                super.onFailure(statusCode, headers, throwable, errorResponse);
-            }
-        });
-    }
-
-    private void getMyUnreadNotifications() {
-        String userName = sp.getString(SharedPreferencesUtil.TAG_USER_NAME, "");
-        String password = sp.getString(SharedPreferencesUtil.TAG_PASSWORD, "");
-        String str = userName + ":" + password;
-        String encodeStr = Base64.encodeToString(str.getBytes(), Base64.DEFAULT);
-        String loginStr = "Basic " + encodeStr;
-        NourritureRestClient.addHeader(loginStr);
-        NourritureRestClient.get("getMyUnreadNotifications", null, new JsonHttpResponseHandler() {
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
-                Log.e("getMyUnreadNotifications", response.toString());
                 if (statusCode == 200) {
                     try {
                         notificationList = JsonTobean.getList(NotificationBean[].class, response.toString());
@@ -261,5 +259,51 @@ public class NotificationFragment extends Fragment implements View.OnClickListen
                 super.onFailure(statusCode, headers, throwable, errorResponse);
             }
         });
+    }
+
+    private void getMyUnreadNotifications() {
+        String username = sp.getString(SharedPreferencesUtil.TAG_USER_NAME, "");
+        String password = sp.getString(SharedPreferencesUtil.TAG_PASSWORD, "");
+        NourritureRestClient.getWithLogin("getMyUnreadNotifications", null, username, password, new JsonHttpResponseHandler() {
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
+                Log.e("getMyUnreadNotifications", response.toString());
+                if (statusCode == 200) {
+                    try {
+                        unReadNotificationList = JsonTobean.getList(NotificationBean[].class, response.toString());
+                        Collections.reverse(unReadNotificationList);
+                        ObjectPersistence.writeObjectToFile(getActivity(), unReadNotificationList, NOTIFICATION_DATA_PATH);
+                        if (unReadNotificationList != null && unReadNotificationList.size() > 0) {
+                            notification_num = unReadNotificationList.size();
+                            tv_notification_num.setVisibility(View.VISIBLE);
+                            tv_notification_num.setText(String.valueOf(notification_num));
+                        } else {
+                            tv_notification_num.setVisibility(View.GONE);
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                } else {
+                    getLocalNotificationData();
+                    if (unReadNotificationList != null && unReadNotificationList.size() > 0) {
+                        tv_notification_num.setText(String.valueOf(unReadNotificationList.size()));
+                    } else {
+                        tv_notification_num.setVisibility(View.GONE);
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+                super.onFailure(statusCode, headers, throwable, errorResponse);
+            }
+        });
+    }
+
+    private void getLocalNotificationData() {
+        List<NotificationBean> localNotificationList = (List<NotificationBean>) ObjectPersistence.readObjectFromFile(getActivity(), NOTIFICATION_DATA_PATH);
+        if (localNotificationList != null) {
+            unReadNotificationList = localNotificationList;
+        }
     }
 }

@@ -20,6 +20,8 @@
     <string name="favor_dishes">Favor Dishes</string>
     <string name="friends">Friends</string>
     <string name="user_comment">My Comment</string>
+    <string name="user_notification">My Notification</string>
     <string name="login_tip">please login first</string>
+    <string name="user_no_dish_tip">please add dish first</string>
 
 </resources>

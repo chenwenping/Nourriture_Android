@@ -1,6 +1,8 @@
 package team_10.nourriture_android.activity;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
@@ -20,12 +22,16 @@ import org.json.JSONObject;
 import java.util.List;
 
 import team_10.nourriture_android.R;
+import team_10.nourriture_android.application.MyApplication;
 import team_10.nourriture_android.bean.CommentBean;
 import team_10.nourriture_android.bean.DishBean;
 import team_10.nourriture_android.bean.LikeBean;
+import team_10.nourriture_android.bean.UserBean;
 import team_10.nourriture_android.jsonTobean.JsonTobean;
 import team_10.nourriture_android.utils.AsynImageLoader;
+import team_10.nourriture_android.utils.GlobalParams;
 import team_10.nourriture_android.utils.ObjectPersistence;
+import team_10.nourriture_android.utils.SharedPreferencesUtil;
 
 /**
  * Created by ping on 2014/12/21.
@@ -43,6 +49,12 @@ public class DishDetailActivity extends ActionBarActivity implements View.OnClic
     private TextView favor_num_tv, comment_num_tv;
     private List<LikeBean> likeList;
     private List<CommentBean> commentList;
+    private String pictureBaseUrl = "http://5.196.19.84:1337/";
+    private SharedPreferences sp;
+    private boolean isLogin = false;
+    private boolean isLike = false;
+    private UserBean userBean;
+    private int request = 5;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -51,6 +63,10 @@ public class DishDetailActivity extends ActionBarActivity implements View.OnClic
 
         Intent intent = getIntent();
         dishBean = (DishBean) intent.getSerializableExtra("dishBean");
+
+        sp = getSharedPreferences(GlobalParams.TAG_LOGIN_PREFERENCES, Context.MODE_PRIVATE);
+        isLogin = sp.getBoolean(SharedPreferencesUtil.TAG_IS_LOGIN, false);
+        userBean = MyApplication.getInstance().getUserBeanFromFile();
 
         initView();
         initData();
@@ -82,25 +98,28 @@ public class DishDetailActivity extends ActionBarActivity implements View.OnClic
         if (dishBean.getPicture() == null || "".equals(dishBean.getPicture().trim()) || "null".equals(dishBean.getPicture().trim())) {
             dish_picture_img.setImageResource(R.drawable.default_dish_picture);
         } else {
-            asynImageLoader.showImageAsyn(dish_picture_img, dishBean.getPicture(), R.drawable.default_dish_picture);
+            asynImageLoader.showImageAsyn(dish_picture_img, pictureBaseUrl + dishBean.getPicture(), R.drawable.default_dish_picture);
         }
-
-        getLikesFromDish();
-        getCommentsFromDish();
     }
 
     public void getLikesFromDish() {
-        String url = "/getLikesFromDish/" + dishBean.get_id();
+        String url = "getLikesFromDish/" + dishBean.get_id();
         NourritureRestClient.get(url, null, new JsonHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
+                Log.e("getLikesFromDish", response.toString());
                 if (statusCode == 200) {
                     try {
                         likeList = JsonTobean.getList(LikeBean[].class, response.toString());
-                        Log.e("likeList", response.toString());
                         ObjectPersistence.writeObjectToFile(DishDetailActivity.this, likeList, dishBean.get_id() + DISH_LIKES_DATA_PATH);
                         int favor_num = likeList.size();
                         favor_num_tv.setText(favor_num + " Favors");
+                        for (int i = 0; i < likeList.size(); i++) {
+                            if ((likeList.get(i).getUser()).equals(userBean.get_id())) {
+                                isLike = true;
+                                dish_favor_img.setImageResource(R.drawable.favor_btn_highlight);
+                            }
+                        }
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -128,46 +147,6 @@ public class DishDetailActivity extends ActionBarActivity implements View.OnClic
         });
     }
 
-    public void getCommentsFromDish() {
-        String url = "getCommentsFromDish/" + dishBean.get_id();
-        Log.e("url", url);
-        NourritureRestClient.get(url, null, new JsonHttpResponseHandler() {
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
-                if (statusCode == 200) {
-                    try {
-                        commentList = JsonTobean.getList(CommentBean[].class, response.toString());
-                        Log.e("commentBeanList", response.toString());
-                        ObjectPersistence.writeObjectToFile(DishDetailActivity.this, commentList, dishBean.get_id() + DISH_COMMENTS_DATA_PATH);
-                        int comment_num = commentList.size();
-                        comment_num_tv.setText(comment_num + " Comments");
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                } else {
-                    getLocalCommentsData();
-                    if (commentList != null && commentList.size() > 0) {
-                        int comment_num = commentList.size();
-                        comment_num_tv.setText(comment_num + " Comments");
-                    } else {
-                        Toast.makeText(DishDetailActivity.this, "Network connection is wrong.", Toast.LENGTH_SHORT).show();
-                    }
-                }
-            }
-
-            @Override
-            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
-                getLocalCommentsData();
-                if (commentList != null && commentList.size() > 0) {
-                    int comment_num = commentList.size();
-                    comment_num_tv.setText(comment_num + " Comments");
-                } else {
-                    Toast.makeText(DishDetailActivity.this, "Network connection is wrong.", Toast.LENGTH_SHORT).show();
-                }
-            }
-        });
-    }
-
     private void getLocalLikesData() {
         List<LikeBean> localLikeList = (List<LikeBean>) ObjectPersistence.readObjectFromFile(DishDetailActivity.this, dishBean.get_id() + DISH_LIKES_DATA_PATH);
         if (localLikeList != null) {
@@ -175,21 +154,24 @@ public class DishDetailActivity extends ActionBarActivity implements View.OnClic
         }
     }
 
-    private void getLocalCommentsData() {
-        List<CommentBean> localCommentList = (List<CommentBean>) ObjectPersistence.readObjectFromFile(DishDetailActivity.this, dishBean.get_id() + DISH_COMMENTS_DATA_PATH);
-        if (localCommentList != null) {
-            commentList = localCommentList;
-        }
-    }
-
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.ll_dish_favor:
-                dish_favor_img.setImageResource(R.drawable.favor_btn_highlight);
-                Toast.makeText(this, "like it.", Toast.LENGTH_SHORT).show();
-                // other actions
-
+                if (isLogin) {
+                    if (isLike) {
+                        isLike = false;
+                        dish_favor_img.setImageResource(R.drawable.favor_btn_default);
+                        Toast.makeText(this, "don't like it.", Toast.LENGTH_SHORT).show();
+                    } else {
+                        isLike = true;
+                        dish_favor_img.setImageResource(R.drawable.favor_btn_highlight);
+                        Toast.makeText(this, "like it.", Toast.LENGTH_SHORT).show();
+                    }
+                } else {
+                    Intent intent = new Intent(DishDetailActivity.this, LoginActivity.class);
+                    startActivityForResult(intent, request);
+                }
                 break;
             case R.id.ll_dish_comment:
                 Intent intent = new Intent(DishDetailActivity.this, DishCommentActivity.class);
@@ -203,6 +185,14 @@ public class DishDetailActivity extends ActionBarActivity implements View.OnClic
                 break;
             default:
                 break;
+        }
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == LoginActivity.KEY_IS_LOGIN) {
+            isLogin = true;
         }
     }
 }

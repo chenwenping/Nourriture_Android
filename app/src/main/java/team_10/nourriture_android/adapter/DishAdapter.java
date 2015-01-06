@@ -44,6 +44,7 @@ public class DishAdapter extends BaseAdapter {
     private boolean isUpdate = false;
     private boolean isUserDish = false;
     private DishViewHolder dvh = null;
+    private String pictureBaseUrl = "http://5.196.19.84:1337/";
 
     public DishAdapter(Context context, List<DishBean> dishList) {
         mInflater = LayoutInflater.from(context);
@@ -91,7 +92,7 @@ public class DishAdapter extends BaseAdapter {
         if (dishBean.getPicture() == null || "".equals(dishBean.getPicture().trim()) || "null".equals(dishBean.getPicture().trim())) {
             dvh.picture.setImageResource(R.drawable.default_dish_picture);
         } else {
-            asynImageLoader.showImageAsyn(dvh.picture, dishBean.getPicture(), R.drawable.default_dish_picture);
+            asynImageLoader.showImageAsyn(dvh.picture, pictureBaseUrl + dishBean.getPicture(), R.drawable.default_dish_picture);
         }
 
         dvh.dish_item_rl.setOnClickListener(new View.OnClickListener() {

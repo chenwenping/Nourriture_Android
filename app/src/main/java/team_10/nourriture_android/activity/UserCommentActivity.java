@@ -1,19 +1,15 @@
 package team_10.nourriture_android.activity;
 
-import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.View;
-import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ListView;
-import android.widget.Toast;
 
 import com.loopj.android.http.JsonHttpResponseHandler;
 
@@ -41,7 +37,7 @@ public class UserCommentActivity extends ActionBarActivity implements SwipeRefre
     private static final String USER_COMMENTS_DATA_PATH = "_user_comments_data.bean";
     private UserBean userBean;
     private List<CommentBean> commentList;
-    private List<CommentBean> userCommentList;
+    private List<CommentBean> userCommentList = new ArrayList<>();
     private Context mContext;
     private Button back_btn;
     private CommentAdapter commentAdapter;
@@ -74,34 +70,6 @@ public class UserCommentActivity extends ActionBarActivity implements SwipeRefre
         swipeLayout.setColorScheme(android.R.color.holo_red_light, android.R.color.holo_green_light,
                 android.R.color.holo_blue_bright, android.R.color.holo_orange_light);
         commentListView = (ListView) this.findViewById(R.id.commentListView);
-        commentListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
-            @Override
-            public boolean onItemLongClick(AdapterView<?> parent, View view, final int position, long id) {
-                final CommentBean commentBean = (CommentBean) commentAdapter.getItem(position);
-
-                AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
-                builder.setTitle("Confirm delete");
-                builder.setIcon(android.R.drawable.ic_dialog_info);
-                builder.setMessage("Do you really want to delete the comment ?");
-                builder.setPositiveButton("yes", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        // delete the comment.
-                        progress.setMessage("Deleting...");
-                        progress.show();
-                        deleteUserComment(commentBean);
-                    }
-                });
-                builder.setNegativeButton("cancel", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.cancel();
-                    }
-                });
-                builder.create().show();
-                return true;
-            }
-        });
 
         back_btn = (Button) this.findViewById(R.id.btn_back);
         back_btn.setOnClickListener(this);
@@ -118,7 +86,6 @@ public class UserCommentActivity extends ActionBarActivity implements SwipeRefre
                 if (statusCode == 200) {
                     try {
                         commentList = JsonTobean.getList(CommentBean[].class, response.toString());
-                        userCommentList = new ArrayList<>();
                         if (commentList != null && commentList.size() > 0) {
                             for (int i = 0; i < commentList.size(); i++) {
                                 CommentBean commentBean = commentList.get(i);
@@ -136,7 +103,7 @@ public class UserCommentActivity extends ActionBarActivity implements SwipeRefre
                             commentAdapter.mCommentList.addAll(userCommentList);
                             isRefresh = false;
                         } else {
-                            commentAdapter = new CommentAdapter(mContext, false);
+                            commentAdapter = new CommentAdapter(mContext, false, true);
                             commentAdapter.mCommentList.addAll(userCommentList);
                         }
                         commentListView.setAdapter(commentAdapter);
@@ -153,7 +120,7 @@ public class UserCommentActivity extends ActionBarActivity implements SwipeRefre
                         commentAdapter.mCommentList.addAll(userCommentList);
                         isRefresh = false;
                     } else {
-                        commentAdapter = new CommentAdapter(mContext, false);
+                        commentAdapter = new CommentAdapter(mContext, false, true);
                         commentAdapter.mCommentList.addAll(userCommentList);
                     }
                     commentListView.setAdapter(commentAdapter);
@@ -174,38 +141,11 @@ public class UserCommentActivity extends ActionBarActivity implements SwipeRefre
                     commentAdapter.mCommentList.addAll(userCommentList);
                     isRefresh = false;
                 } else {
-                    commentAdapter = new CommentAdapter(mContext, false);
+                    commentAdapter = new CommentAdapter(mContext, false, true);
                     commentAdapter.mCommentList.addAll(userCommentList);
                 }
                 commentListView.setAdapter(commentAdapter);
                 commentAdapter.notifyDataSetChanged();
-            }
-        });
-    }
-
-    public void deleteUserComment(CommentBean commentBean) {
-        String url = "comments/" + commentBean.get_id();
-        NourritureRestClient.delete(url, new JsonHttpResponseHandler() {
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                super.onSuccess(statusCode, headers, response);
-                Log.e("delete comment", response.toString());
-                if (progress.isShowing()) {
-                    progress.dismiss();
-                }
-                if (statusCode == 204) {
-                    getUserCommentList();
-                } else {
-                    Toast.makeText(UserCommentActivity.this, "Deleting comment is wrong. Please try it again.", Toast.LENGTH_SHORT).show();
-                }
-            }
-
-            @Override
-            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
-                if (progress.isShowing()) {
-                    progress.dismiss();
-                }
-                Toast.makeText(UserCommentActivity.this, "Deleting comment is wrong. Please try it again.", Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -237,7 +177,7 @@ public class UserCommentActivity extends ActionBarActivity implements SwipeRefre
     private void getLocalCommentsData() {
         List<CommentBean> localCommentList = (List<CommentBean>) ObjectPersistence.readObjectFromFile(mContext, USER_COMMENTS_DATA_PATH);
         if (localCommentList != null) {
-            commentList = localCommentList;
+            userCommentList = localCommentList;
         }
     }
 }

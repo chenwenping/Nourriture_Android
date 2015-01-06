@@ -214,5 +214,41 @@
 
         </LinearLayout>
 
+        <LinearLayout
+            android:id="@+id/ll_my_notification"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/item"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:src="@drawable/comment_recipe" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginLeft="10dp"
+                android:text="My Notifications"
+                android:textColor="@color/black"
+                android:textSize="@dimen/text_main" />
+
+            <TextView
+                android:id="@+id/notification_num_tv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginLeft="50dp"
+                android:background="@drawable/message_count_bg"
+                android:padding="5dp"
+                android:textColor="@color/white"
+                android:textSize="@dimen/text_main"
+                android:visibility="gone" />
+
+        </LinearLayout>
+
     </LinearLayout>
 </LinearLayout>

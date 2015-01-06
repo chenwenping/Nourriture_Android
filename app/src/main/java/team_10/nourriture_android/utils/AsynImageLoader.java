@@ -24,7 +24,7 @@ public class AsynImageLoader {
     private List<Task> taskQueue;
     private boolean isRunning = false;
 
-//    public static String CACHE_DIR = "/nourriture/picture/cache";
+    //    public static String CACHE_DIR = "/nourriture/picture/cache";
     private Handler handler = new Handler() {
 
         @Override

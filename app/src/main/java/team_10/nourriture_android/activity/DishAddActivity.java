@@ -101,6 +101,9 @@ public class DishAddActivity extends ActionBarActivity implements View.OnClickLi
             @Override
             public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
                 super.onFailure(statusCode, headers, throwable, errorResponse);
+                if (progress.isShowing()) {
+                    progress.dismiss();
+                }
                 Toast.makeText(getApplicationContext(), "Adding dish is wrong. Please try it again.", Toast.LENGTH_SHORT).show();
             }
         });

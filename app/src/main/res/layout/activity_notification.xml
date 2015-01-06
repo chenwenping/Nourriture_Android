@@ -5,6 +5,7 @@
     android:orientation="vertical">
 
     <RelativeLayout
+        android:id="@+id/rl_title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@drawable/title_nav_bar">
@@ -22,37 +23,18 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
-            android:text="@string/favor_dishes" />
+            android:text="@string/user_notification" />
 
     </RelativeLayout>
-
-    <LinearLayout
-        android:id="@+id/ll_no_favor_dish"
-        android:layout_width="fill_parent"
-        android:layout_height="200dp"
-        android:layout_margin="5dp"
-        android:background="@drawable/item"
-        android:gravity="center"
-        android:orientation="vertical"
-        android:visibility="gone">
-
-        <TextView
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="10dp"
-            android:text="Sorry, you may not have any favor dish."
-            android:textColor="@color/black"
-            android:textSize="@dimen/text_big" />
-
-    </LinearLayout>
 
     <android.support.v4.widget.SwipeRefreshLayout
         android:id="@+id/swipe_refresh"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/rl_title">
 
         <ListView
-            android:id="@+id/favorListView"
+            android:id="@+id/notificationListView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:divider="@color/white"

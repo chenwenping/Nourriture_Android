@@ -38,7 +38,7 @@
                 android:text="2014-11-11 12:12:12"
                 android:textColor="@color/item_gray_color"
                 android:textSize="@dimen/text_small" />
-            s
+
             <!-- <LinearLayout
                  android:layout_width="fill_parent"
                  android:layout_height="wrap_content"

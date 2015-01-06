@@ -24,6 +24,7 @@ import org.apache.http.Header;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.util.Collections;
 import java.util.List;
 
 import team_10.nourriture_android.R;
@@ -87,7 +88,6 @@ public class DishCommentActivity extends ActionBarActivity implements SwipeRefre
         swipeLayout.setColorScheme(android.R.color.holo_red_light, android.R.color.holo_green_light,
                 android.R.color.holo_blue_bright, android.R.color.holo_orange_light);
         commentListView = (ListView) this.findViewById(R.id.commentListView);
-        commentListView.setEnabled(false);
         no_comment_tv = (TextView) this.findViewById(R.id.tv_no_dish_comment);
         dish_comment_et = (EditText) this.findViewById(R.id.et_dish_comment);
         dish_comment_btn = (Button) this.findViewById(R.id.btn_dish_comment);
@@ -157,6 +157,7 @@ public class DishCommentActivity extends ActionBarActivity implements SwipeRefre
                 if (statusCode == 200) {
                     try {
                         commentList = JsonTobean.getList(CommentBean[].class, response.toString());
+                        Collections.reverse(commentList);
                         ObjectPersistence.writeObjectToFile(mContext, commentList, dishBean.get_id() + DISH_COMMENTS_DATA_PATH);
                         if (commentList == null || commentList.size() == 0) {
                             no_comment_tv.setVisibility(View.VISIBLE);

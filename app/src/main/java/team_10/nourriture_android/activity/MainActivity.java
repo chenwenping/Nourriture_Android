@@ -7,6 +7,8 @@ import android.view.View;
 import android.widget.Button;
 
 import team_10.nourriture_android.R;
+import team_10.nourriture_android.service.PollingService;
+import team_10.nourriture_android.service.PollingUtils;
 
 public class MainActivity extends ActionBarActivity {
 
@@ -19,6 +21,9 @@ public class MainActivity extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        // start polling service
+        PollingUtils.startPollingService(this, 5, PollingService.class, PollingService.ACTION);
 
         btn_dishes = (Button) findViewById(R.id.dishes_btn);
         btn_myRecipes = (Button) findViewById(R.id.myRecipes_btn);
@@ -58,4 +63,11 @@ public class MainActivity extends ActionBarActivity {
         });
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        // stop polling service
+        PollingUtils.stopPollingService(this, PollingService.class, PollingService.ACTION);
+
+    }
 }
