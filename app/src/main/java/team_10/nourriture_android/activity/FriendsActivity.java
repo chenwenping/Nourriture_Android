@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
+import android.widget.TextView;
 
 import com.loopj.android.http.JsonHttpResponseHandler;
 
@@ -15,6 +16,7 @@ import org.json.JSONObject;
 import team_10.nourriture_android.R;
 import team_10.nourriture_android.utils.GlobalParams;
 import team_10.nourriture_android.utils.SharedPreferencesUtil;
+import team_10.nourriture_android.view.LetterListView;
 
 /**
  * Created by ping on 2014/12/28.
@@ -22,12 +24,17 @@ import team_10.nourriture_android.utils.SharedPreferencesUtil;
 public class FriendsActivity extends ActionBarActivity {
 
     private SharedPreferences sp;
+    private LetterListView letterListView;
+    private String[] b = { "#", "A", "B", "C", "D", "E", "F", "G", "H", "I",
+            "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V",
+            "W", "X", "Y", "Z" };
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_friends);
         sp = getApplicationContext().getSharedPreferences(GlobalParams.TAG_LOGIN_PREFERENCES, Context.MODE_PRIVATE);
+        letterListView = (LetterListView) findViewById(R.id.LetterListView);
         getFriends();
     }
 

@@ -23,6 +23,8 @@ import team_10.nourriture_android.R;
 import team_10.nourriture_android.application.MyApplication;
 import team_10.nourriture_android.bean.UserBean;
 import team_10.nourriture_android.jsonTobean.JsonTobean;
+import team_10.nourriture_android.service.PollingService;
+import team_10.nourriture_android.service.PollingUtils;
 import team_10.nourriture_android.utils.SharedPreferencesUtil;
 
 /**
@@ -95,6 +97,10 @@ public class LoginActivity extends ActionBarActivity implements View.OnClickList
                         MyApplication.getInstance().islogin = true;
                         SharedPreferencesUtil.saveLogin(getBaseContext(), username, password, true);
                         Toast.makeText(LoginActivity.this, "Login Success.", Toast.LENGTH_SHORT).show();
+
+                        // start polling service
+                        PollingUtils.startPollingService(LoginActivity.this, 2, PollingService.class, PollingService.ACTION);
+
                         Intent intent = new Intent();
                         setResult(KEY_IS_LOGIN, intent);
                         finish();

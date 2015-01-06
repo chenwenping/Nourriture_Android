@@ -1,13 +1,16 @@
 package team_10.nourriture_android.activity;
 
+import android.app.NotificationManager;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ListView;
@@ -35,6 +38,7 @@ import team_10.nourriture_android.utils.SharedPreferencesUtil;
  */
 public class NotificationActivity extends ActionBarActivity implements SwipeRefreshLayout.OnRefreshListener, View.OnClickListener {
 
+    public static int NOTIFICATION_IS_READ = 1;
     private static final String NOTIFICATION_DATA_PATH = "_notification_data.bean";
     private Context mContext;
     private ProgressDialog progress;
@@ -54,6 +58,9 @@ public class NotificationActivity extends ActionBarActivity implements SwipeRefr
         mContext = this;
         progress = new ProgressDialog(this);
         sp = getSharedPreferences(GlobalParams.TAG_LOGIN_PREFERENCES, Context.MODE_PRIVATE);
+
+        NotificationManager manager = (NotificationManager)getSystemService(Context.NOTIFICATION_SERVICE);
+        manager.cancelAll();
 
         initView();
         initData();
@@ -98,11 +105,27 @@ public class NotificationActivity extends ActionBarActivity implements SwipeRefr
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.btn_back:
+                Intent intent = new Intent();
+                if(notificationAdapter.mNotificationList!=null){
+                    intent.putExtra("notification_num", String.valueOf(notificationAdapter.mNotificationList.size()));
+                }
+                setResult(NOTIFICATION_IS_READ, intent);
                 finish();
                 break;
             default:
                 break;
         }
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        Intent intent = new Intent();
+        if(notificationAdapter.mNotificationList!=null){
+            intent.putExtra("notification_num", String.valueOf(notificationAdapter.mNotificationList.size()));
+        }
+        setResult(NOTIFICATION_IS_READ, intent);
+        finish();
+        return super.onKeyDown(keyCode, event);
     }
 
     public void getUnReadNotificationList() {

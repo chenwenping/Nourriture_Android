@@ -2,6 +2,7 @@ package team_10.nourriture_android.adapter;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -14,6 +15,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.loopj.android.http.JsonHttpResponseHandler;
+import com.loopj.android.http.RequestParams;
 
 import org.apache.http.Header;
 import org.json.JSONArray;
@@ -26,9 +28,12 @@ import java.util.List;
 import team_10.nourriture_android.R;
 import team_10.nourriture_android.activity.DishDetailActivity;
 import team_10.nourriture_android.activity.NourritureRestClient;
+import team_10.nourriture_android.activity.SettingFragment;
 import team_10.nourriture_android.bean.DishBean;
 import team_10.nourriture_android.bean.NotificationBean;
 import team_10.nourriture_android.jsonTobean.JsonTobean;
+import team_10.nourriture_android.utils.GlobalParams;
+import team_10.nourriture_android.utils.SharedPreferencesUtil;
 
 /**
  * Created by ping on 2015/1/5.
@@ -41,6 +46,7 @@ public class NotificationAdapter extends BaseAdapter {
     private Context mContext;
     private boolean isUpdate = false;
     private NotificationViewHolder nvh = null;
+    private SharedPreferences sp;
 
     public NotificationAdapter(Context context, List<NotificationBean> notificationList) {
         mInflater = LayoutInflater.from(context);
@@ -82,8 +88,9 @@ public class NotificationAdapter extends BaseAdapter {
         nvh.notification_item_ll.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                readNotification(notificationBean);
                 if ("dish".equals(notificationBean.getTargetType().trim())) {
-                    getDishByNotification(notificationBean.getTarget());
+                    getDishByNotification(notificationBean);
                 }
             }
         });
@@ -91,8 +98,35 @@ public class NotificationAdapter extends BaseAdapter {
         return convertView;
     }
 
-    public void getDishByNotification(String dish_id) {
-        String url = "dishes/" + dish_id;
+    public void readNotification(final NotificationBean notificationBean) {
+        sp = mContext.getSharedPreferences(GlobalParams.TAG_LOGIN_PREFERENCES, Context.MODE_PRIVATE);
+        String username = sp.getString(SharedPreferencesUtil.TAG_USER_NAME, "");
+        String password = sp.getString(SharedPreferencesUtil.TAG_PASSWORD, "");
+
+        RequestParams params = new RequestParams();
+        params.add("notification_id", notificationBean.get_id());
+
+        NourritureRestClient.putWithLogin("readNotification", params, username, password, new JsonHttpResponseHandler(){
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                Log.e("readNotification", response.toString());
+                mNotificationList.remove(notificationBean);
+                notifyDataSetChanged();
+                Intent intent = new Intent();
+                intent.putExtra("notificationNum", String.valueOf(mNotificationList.size()-1));
+                intent.setAction("android.action.Notification");
+                mContext.sendBroadcast(intent);
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                super.onFailure(statusCode, headers, responseString, throwable);
+            }
+        });
+    }
+
+    public void getDishByNotification(NotificationBean notificationBean) {
+        String url = "dishes/" + notificationBean.getTarget();
         NourritureRestClient.get(url, null, new JsonHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONArray response) {

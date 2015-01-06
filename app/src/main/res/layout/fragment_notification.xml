@@ -241,9 +241,9 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
-                android:layout_marginLeft="50dp"
-                android:background="@drawable/message_count_bg"
-                android:padding="5dp"
+                android:gravity="center"
+                android:layout_marginLeft="80dp"
+                android:background="@drawable/notification_dot"
                 android:textColor="@color/white"
                 android:textSize="@dimen/text_main"
                 android:visibility="gone" />

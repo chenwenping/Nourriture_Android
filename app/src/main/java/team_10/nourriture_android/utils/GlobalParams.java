@@ -41,6 +41,8 @@ public class GlobalParams {
 
     public static final String TAG_LOGIN_PREFERENCES = "nourriture_user_login";
 
+    public static final String TAG_NOTIFICATION_PREFERENCES = "nourriture_notification_num";
+
     /*
      * 从连接池中取连接的超时时间
      */

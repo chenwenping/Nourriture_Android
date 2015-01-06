@@ -8,21 +8,28 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.IBinder;
+import android.os.Looper;
+import android.util.Base64;
 import android.util.Log;
 
+import com.loopj.android.http.AsyncHttpClient;
+import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.JsonHttpResponseHandler;
 
 import org.apache.http.Header;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.io.Serializable;
 import java.util.Collections;
 import java.util.List;
 
 import team_10.nourriture_android.R;
 import team_10.nourriture_android.activity.NotificationActivity;
 import team_10.nourriture_android.activity.NourritureRestClient;
+import team_10.nourriture_android.application.MyApplication;
 import team_10.nourriture_android.bean.NotificationBean;
+import team_10.nourriture_android.bean.UserBean;
 import team_10.nourriture_android.jsonTobean.JsonTobean;
 import team_10.nourriture_android.utils.GlobalParams;
 import team_10.nourriture_android.utils.ObjectPersistence;
@@ -32,12 +39,13 @@ public class PollingService extends Service {
 
     public static final String ACTION = "team_10.nourriture_android.service.PollingService";
     private static final String NOTIFICATION_DATA_PATH = "_notification_data.bean";
-    int count = 0;
     private Notification mNotification;
     private NotificationManager mManager;
     private List<NotificationBean> unReadNotificationList;
     private int notification_num = 0;
     private SharedPreferences sp;
+    private boolean isLogin = false;
+    private UserBean userBean;
 
     @Override
     public IBinder onBind(Intent intent) {
@@ -59,19 +67,28 @@ public class PollingService extends Service {
         int icon = R.drawable.ic_launcher;
         mNotification = new Notification();
         mNotification.icon = icon;
-        mNotification.tickerText = "New Message";
+        mNotification.tickerText = "New Notification";
         mNotification.defaults |= Notification.DEFAULT_SOUND;
         mNotification.flags = Notification.FLAG_AUTO_CANCEL;
     }
 
     private void showNotification() {
-        mNotification.when = System.currentTimeMillis();
-        //Navigator to the new activity when click the notification title
-        Intent intent = new Intent(this, NotificationActivity.class);
-        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, 0);
-        mNotification.setLatestEventInfo(this,
-                getResources().getString(R.string.app_name), "You have new message.", pendingIntent);
-        mManager.notify(0, mNotification);
+        if (isLogin) {
+            Intent intent = new Intent(getApplicationContext(), NotificationActivity.class);
+            intent.putExtra("unReadNotificationList", (Serializable) unReadNotificationList);
+            PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), 0, intent, 0);
+            mNotification.when = System.currentTimeMillis();
+            mNotification.setLatestEventInfo(getApplicationContext(),
+                    getResources().getString(R.string.app_name), "You have unread notification.", pendingIntent);
+            mManager.notify(0, mNotification);
+        }
+    }
+
+    private void updateNotificationByBroadCast(){
+        Intent intentBroadcast = new Intent();
+        intentBroadcast.putExtra("notificationNum", String.valueOf(notification_num));
+        intentBroadcast.setAction("android.action.Notification");
+        sendBroadcast(intentBroadcast);
     }
 
     @Override
@@ -80,29 +97,37 @@ public class PollingService extends Service {
         System.out.println("Service:onDestroy");
     }
 
-    private void getMyUnreadNotifications() {
-        sp = getSharedPreferences(GlobalParams.TAG_LOGIN_PREFERENCES, Context.MODE_PRIVATE);
+    private void getUnReadNotification() {
+        userBean = MyApplication.getInstance().getUserBeanFromFile();
+        sp = getApplicationContext().getSharedPreferences(GlobalParams.TAG_LOGIN_PREFERENCES, Context.MODE_PRIVATE);
+        isLogin = sp.getBoolean(SharedPreferencesUtil.TAG_IS_LOGIN, false);
         String username = sp.getString(SharedPreferencesUtil.TAG_USER_NAME, "");
         String password = sp.getString(SharedPreferencesUtil.TAG_PASSWORD, "");
+
         NourritureRestClient.getWithLogin("getMyUnreadNotifications", null, username, password, new JsonHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
-                Log.e("getMyUnreadNotifications", response.toString());
+                Log.e("polling unread notifications", response.toString());
                 if (statusCode == 200) {
                     try {
                         unReadNotificationList = JsonTobean.getList(NotificationBean[].class, response.toString());
                         Collections.reverse(unReadNotificationList);
-                        ObjectPersistence.writeObjectToFile(getApplicationContext(), unReadNotificationList, NOTIFICATION_DATA_PATH);
                         if (unReadNotificationList != null && unReadNotificationList.size() > 0) {
                             notification_num = unReadNotificationList.size();
+                            int num = getLocalNotificationNum();
+                            if (num == 0) {
+                                showNotification();
+                            } else if (notification_num > num) {
+                                showNotification();
+                            }
+                            updateNotificationByBroadCast();
+                            ObjectPersistence.writeObjectToFile(getApplicationContext(), unReadNotificationList, userBean.get_id() + NOTIFICATION_DATA_PATH);
+                        } else {
+                            notification_num = 0;
+                            updateNotificationByBroadCast();
                         }
                     } catch (Exception e) {
                         e.printStackTrace();
-                    }
-                } else {
-                    getLocalNotificationData();
-                    if (unReadNotificationList != null && unReadNotificationList.size() > 0) {
-                        notification_num = unReadNotificationList.size();
                     }
                 }
             }
@@ -114,21 +139,27 @@ public class PollingService extends Service {
         });
     }
 
-    private void getLocalNotificationData() {
-        List<NotificationBean> localNotificationList = (List<NotificationBean>) ObjectPersistence.readObjectFromFile(getApplicationContext(), NOTIFICATION_DATA_PATH);
+    private int getLocalNotificationNum() {
+        List<NotificationBean> localNotificationList = (List<NotificationBean>) ObjectPersistence.readObjectFromFile(getApplicationContext(), userBean.get_id() + NOTIFICATION_DATA_PATH);
         if (localNotificationList != null) {
-            unReadNotificationList = localNotificationList;
+            return localNotificationList.size();
         }
+        return 0;
     }
 
     class PollingThread extends Thread {
         @Override
         public void run() {
-            System.out.println("Polling...");
-            count++;
-            if (count % 2 == 0) {
-                showNotification();
-                System.out.println("New message!");
+            Looper.prepare();
+            while (true) {
+                System.out.println("Polling...");
+                try {
+                    Thread.sleep(1000);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                getUnReadNotification();
+                Looper.loop();
             }
         }
     }

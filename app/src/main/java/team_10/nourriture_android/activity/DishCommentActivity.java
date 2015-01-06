@@ -239,8 +239,8 @@ public class DishCommentActivity extends ActionBarActivity implements SwipeRefre
 
     public void addComment(String dish_comment) {
         RequestParams params = new RequestParams();
-        params.put("dish", dishBean.get_id());
-        params.put("content", dish_comment);
+        params.add("dish", dishBean.get_id());
+        params.add("content", dish_comment);
 
         String username = sp.getString(SharedPreferencesUtil.TAG_USER_NAME, "");
         String password = sp.getString(SharedPreferencesUtil.TAG_PASSWORD, "");
@@ -261,7 +261,7 @@ public class DishCommentActivity extends ActionBarActivity implements SwipeRefre
                         e.printStackTrace();
                     }
                 } else {
-                    Toast.makeText(getApplicationContext(), "Adding comment is wrong. Please try it again.", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(), "Adding comment is wrong. Please try it.", Toast.LENGTH_SHORT).show();
                 }
             }
 
@@ -270,7 +270,7 @@ public class DishCommentActivity extends ActionBarActivity implements SwipeRefre
                 if (progress.isShowing()) {
                     progress.dismiss();
                 }
-                Toast.makeText(getApplicationContext(), "Adding comment is wrong. Please try it again.", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), "Adding comment is wrong. Please try it.", Toast.LENGTH_SHORT).show();
             }
         });
     }

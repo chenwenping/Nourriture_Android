@@ -23,7 +23,7 @@ public class MainActivity extends ActionBarActivity {
         setContentView(R.layout.activity_main);
 
         // start polling service
-        PollingUtils.startPollingService(this, 5, PollingService.class, PollingService.ACTION);
+        PollingUtils.startPollingService(this, 2, PollingService.class, PollingService.ACTION);
 
         btn_dishes = (Button) findViewById(R.id.dishes_btn);
         btn_myRecipes = (Button) findViewById(R.id.myRecipes_btn);
@@ -68,6 +68,5 @@ public class MainActivity extends ActionBarActivity {
         super.onDestroy();
         // stop polling service
         PollingUtils.stopPollingService(this, PollingService.class, PollingService.ACTION);
-
     }
 }

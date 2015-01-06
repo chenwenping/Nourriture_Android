@@ -13,11 +13,10 @@ public class SharedPreferencesUtil {
     public static final String TAG_USER_NAME = "USER_NAME";
     public static final String TAG_PASSWORD = "SAVE_PASSWORD";
     public static final String TAG_IS_LOGIN = "IS_LOGIN";
-    public static final String TAG_LOGIN_CHECK = "USER_TIME_CHECK";
     public static final String TAG_LOGIN_TIME = "USER_TIME";
     public static final String TAG_USER_TOKEN = "TAG_USER_TOKEN";
-    private static final String sTag = SharedPreferencesUtil.class.getName();
     private static final String SHAREDPREFERE_NAME = "nourriture_";
+    private static final String TAG_NOTIFICATION_NUM = "NOTIFICATION_NUM";
 
     /**
      * 保存登录
@@ -35,9 +34,19 @@ public class SharedPreferencesUtil {
         editor.putString(TAG_PASSWORD, pwd);
         editor.putBoolean(TAG_IS_LOGIN, isLogin);
         editor.putLong(TAG_LOGIN_TIME, d.getTime());
-//        editor.putString(TAG_USER_TOKEN, token);
-//        editor.putBoolean(TAG_AUTO_LOGIN_BOOL, isAutLogin);
         editor.commit();
+    }
+
+    public static synchronized void saveNotificationNum(Context context, String notification_num) {
+        SharedPreferences sp = context.getSharedPreferences(GlobalParams.TAG_NOTIFICATION_PREFERENCES, Context.MODE_PRIVATE);
+        Editor editor = sp.edit();
+        editor.putString(TAG_NOTIFICATION_NUM, notification_num);
+        editor.commit();
+    }
+
+    public static synchronized String getNotificationNum(Context context){
+        SharedPreferences sp = context.getSharedPreferences(GlobalParams.TAG_NOTIFICATION_PREFERENCES, Context.MODE_PRIVATE);
+        return sp.getString(TAG_NOTIFICATION_NUM, "");
     }
 
     /*public static synchronized String getUserName(Context context){

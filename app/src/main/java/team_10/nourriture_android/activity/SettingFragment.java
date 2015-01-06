@@ -1,6 +1,7 @@
 package team_10.nourriture_android.activity;
 
 import android.app.AlertDialog;
+import android.app.NotificationManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
@@ -14,6 +15,8 @@ import android.widget.Toast;
 
 import team_10.nourriture_android.R;
 import team_10.nourriture_android.application.MyApplication;
+import team_10.nourriture_android.service.PollingService;
+import team_10.nourriture_android.service.PollingUtils;
 import team_10.nourriture_android.utils.GlobalParams;
 import team_10.nourriture_android.utils.SharedPreferencesUtil;
 
@@ -24,6 +27,8 @@ import team_10.nourriture_android.utils.SharedPreferencesUtil;
 public class SettingFragment extends Fragment {
 
     private Button exit_btn;
+    private SharedPreferences sp;
+    private boolean isLogin = false;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -39,7 +44,15 @@ public class SettingFragment extends Fragment {
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
+        sp = getActivity().getSharedPreferences(GlobalParams.TAG_LOGIN_PREFERENCES, Context.MODE_PRIVATE);
+        isLogin = sp.getBoolean(SharedPreferencesUtil.TAG_IS_LOGIN, false);
+
         exit_btn = (Button) getActivity().findViewById(R.id.btn_exit);
+        if (isLogin){
+            exit_btn.setVisibility(View.VISIBLE);
+        } else {
+            exit_btn.setVisibility(View.GONE);
+        }
         exit_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -58,6 +71,9 @@ public class SettingFragment extends Fragment {
                                 editor.commit();
                                 Toast.makeText(getActivity(), "exit successfully", Toast.LENGTH_SHORT).show();
                                 exit_btn.setVisibility(View.GONE);
+                                NotificationManager manager = (NotificationManager)getActivity().getSystemService(Context.NOTIFICATION_SERVICE);
+                                manager.cancelAll();
+                                PollingUtils.stopPollingService(getActivity(), PollingService.class, PollingService.ACTION);
                             }
                         }).setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
