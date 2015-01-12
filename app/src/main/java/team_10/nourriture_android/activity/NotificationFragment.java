@@ -25,7 +25,6 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -75,10 +74,10 @@ public class NotificationFragment extends Fragment implements View.OnClickListen
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        if(receiver==null){
+        if (receiver == null) {
             receiver = new NotificationBroadCast();
         }
-        IntentFilter intentFilter=new IntentFilter("android.action.Notification");
+        IntentFilter intentFilter = new IntentFilter("android.action.Notification");
         getActivity().registerReceiver(receiver, intentFilter);
 
         rl_user_login = (RelativeLayout) getActivity().findViewById(R.id.user_login_rl);
@@ -168,7 +167,7 @@ public class NotificationFragment extends Fragment implements View.OnClickListen
                         Intent intent3 = new Intent(getActivity().getApplicationContext(), NotificationActivity.class);
                         intent3.putExtra("unReadNotificationList", (Serializable) unReadNotificationList);
                         startActivityForResult(intent3, request);
-                    }else{
+                    } else {
                         Toast.makeText(getActivity(), "There is no unread notification.", Toast.LENGTH_SHORT).show();
                     }
                 } else {
@@ -207,13 +206,13 @@ public class NotificationFragment extends Fragment implements View.OnClickListen
             } else {
                 tv_notification_num.setVisibility(View.GONE);
             }
-        } else if(resultCode == NotificationActivity.NOTIFICATION_IS_READ){
+        } else if (resultCode == NotificationActivity.NOTIFICATION_IS_READ) {
             String num = data.getStringExtra("notification_num");
-            if(num!=null && !"".equals(num.trim()) &&!"0".equals(num.trim())){
+            if (num != null && !"".equals(num.trim()) && !"0".equals(num.trim())) {
                 tv_notification_num.setVisibility(View.VISIBLE);
                 tv_notification_num.setText(num);
                 getMyUnreadNotifications();
-            }else {
+            } else {
                 tv_notification_num.setVisibility(View.GONE);
             }
         }
@@ -266,12 +265,18 @@ public class NotificationFragment extends Fragment implements View.OnClickListen
         }
     }
 
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        getActivity().unregisterReceiver(receiver);
+    }
+
     class NotificationBroadCast extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
             String number = intent.getStringExtra("notificationNum");
-            if(intent.getAction().equals("android.action.Notification")){
-                if(Integer.parseInt(number.toString().trim()) > 0){
+            if (intent.getAction().equals("android.action.Notification")) {
+                if (Integer.parseInt(number.toString().trim()) > 0) {
                     tv_notification_num.setVisibility(View.VISIBLE);
                     tv_notification_num.setText(number);
                     getMyUnreadNotifications();
@@ -280,11 +285,5 @@ public class NotificationFragment extends Fragment implements View.OnClickListen
                 }
             }
         }
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        getActivity().unregisterReceiver(receiver);
     }
 }

@@ -44,7 +44,7 @@ public class SharedPreferencesUtil {
         editor.commit();
     }
 
-    public static synchronized String getNotificationNum(Context context){
+    public static synchronized String getNotificationNum(Context context) {
         SharedPreferences sp = context.getSharedPreferences(GlobalParams.TAG_NOTIFICATION_PREFERENCES, Context.MODE_PRIVATE);
         return sp.getString(TAG_NOTIFICATION_NUM, "");
     }

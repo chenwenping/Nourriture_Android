@@ -28,7 +28,6 @@ import java.util.List;
 import team_10.nourriture_android.R;
 import team_10.nourriture_android.activity.DishDetailActivity;
 import team_10.nourriture_android.activity.NourritureRestClient;
-import team_10.nourriture_android.activity.SettingFragment;
 import team_10.nourriture_android.bean.DishBean;
 import team_10.nourriture_android.bean.NotificationBean;
 import team_10.nourriture_android.jsonTobean.JsonTobean;
@@ -106,14 +105,14 @@ public class NotificationAdapter extends BaseAdapter {
         RequestParams params = new RequestParams();
         params.add("notification_id", notificationBean.get_id());
 
-        NourritureRestClient.putWithLogin("readNotification", params, username, password, new JsonHttpResponseHandler(){
+        NourritureRestClient.putWithLogin("readNotification", params, username, password, new JsonHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                 Log.e("readNotification", response.toString());
                 mNotificationList.remove(notificationBean);
                 notifyDataSetChanged();
                 Intent intent = new Intent();
-                intent.putExtra("notificationNum", String.valueOf(mNotificationList.size()-1));
+                intent.putExtra("notificationNum", String.valueOf(mNotificationList.size() - 1));
                 intent.setAction("android.action.Notification");
                 mContext.sendBroadcast(intent);
             }

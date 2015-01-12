@@ -31,11 +31,11 @@ public class NourritureRestClient {
         client.post(getAbsoluteUrl(url), params, responseHandler);
     }
 
-    public static void put(String url, RequestParams params, AsyncHttpResponseHandler responseHandler){
+    public static void put(String url, RequestParams params, AsyncHttpResponseHandler responseHandler) {
         client.put(getAbsoluteUrl(url), params, responseHandler);
     }
 
-    public static void putWithLogin(String url, RequestParams params, String username, String password, AsyncHttpResponseHandler responseHandler){
+    public static void putWithLogin(String url, RequestParams params, String username, String password, AsyncHttpResponseHandler responseHandler) {
         client.setBasicAuth(username, password);
         client.put(getAbsoluteUrl(url), params, responseHandler);
     }

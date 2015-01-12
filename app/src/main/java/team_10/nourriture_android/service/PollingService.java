@@ -9,11 +9,8 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.IBinder;
 import android.os.Looper;
-import android.util.Base64;
 import android.util.Log;
 
-import com.loopj.android.http.AsyncHttpClient;
-import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.JsonHttpResponseHandler;
 
 import org.apache.http.Header;
@@ -84,7 +81,7 @@ public class PollingService extends Service {
         }
     }
 
-    private void updateNotificationByBroadCast(){
+    private void updateNotificationByBroadCast() {
         Intent intentBroadcast = new Intent();
         intentBroadcast.putExtra("notificationNum", String.valueOf(notification_num));
         intentBroadcast.setAction("android.action.Notification");

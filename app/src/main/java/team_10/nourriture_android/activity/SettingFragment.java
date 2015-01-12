@@ -48,7 +48,7 @@ public class SettingFragment extends Fragment {
         isLogin = sp.getBoolean(SharedPreferencesUtil.TAG_IS_LOGIN, false);
 
         exit_btn = (Button) getActivity().findViewById(R.id.btn_exit);
-        if (isLogin){
+        if (isLogin) {
             exit_btn.setVisibility(View.VISIBLE);
         } else {
             exit_btn.setVisibility(View.GONE);
@@ -71,7 +71,7 @@ public class SettingFragment extends Fragment {
                                 editor.commit();
                                 Toast.makeText(getActivity(), "exit successfully", Toast.LENGTH_SHORT).show();
                                 exit_btn.setVisibility(View.GONE);
-                                NotificationManager manager = (NotificationManager)getActivity().getSystemService(Context.NOTIFICATION_SERVICE);
+                                NotificationManager manager = (NotificationManager) getActivity().getSystemService(Context.NOTIFICATION_SERVICE);
                                 manager.cancelAll();
                                 PollingUtils.stopPollingService(getActivity(), PollingService.class, PollingService.ACTION);
                             }

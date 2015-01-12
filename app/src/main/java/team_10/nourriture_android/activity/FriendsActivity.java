@@ -5,7 +5,6 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
-import android.widget.TextView;
 
 import com.loopj.android.http.JsonHttpResponseHandler;
 
@@ -25,9 +24,9 @@ public class FriendsActivity extends ActionBarActivity {
 
     private SharedPreferences sp;
     private LetterListView letterListView;
-    private String[] b = { "#", "A", "B", "C", "D", "E", "F", "G", "H", "I",
+    private String[] b = {"#", "A", "B", "C", "D", "E", "F", "G", "H", "I",
             "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V",
-            "W", "X", "Y", "Z" };
+            "W", "X", "Y", "Z"};
 
     @Override
     public void onCreate(Bundle savedInstanceState) {

@@ -68,8 +68,8 @@ public class DishAddActivity extends ActionBarActivity implements View.OnClickLi
 
     public void addDish(String dish_name, String dish_description) {
         RequestParams params = new RequestParams();
-        params.put("name", dish_name);
-        params.put("description", dish_description);
+        params.add("name", dish_name);
+        params.add("description", dish_description);
 
         String username = sp.getString(SharedPreferencesUtil.TAG_USER_NAME, "");
         String password = sp.getString(SharedPreferencesUtil.TAG_PASSWORD, "");

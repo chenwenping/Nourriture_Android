@@ -1,12 +1,12 @@
 package team_10.nourriture_android.application;
 
-import android.app.Application;
+import com.baidu.frontia.FrontiaApplication;
 
 import team_10.nourriture_android.activity.LoginActivity;
 import team_10.nourriture_android.bean.UserBean;
 import team_10.nourriture_android.utils.ObjectPersistence;
 
-public class MyApplication extends Application {
+public class MyApplication extends FrontiaApplication {
 
     public static String token;
 
@@ -34,7 +34,6 @@ public class MyApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-//		Initail.init(getApplicationContext());
         instance = this;
     }
 

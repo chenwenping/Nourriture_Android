@@ -38,8 +38,8 @@ import team_10.nourriture_android.utils.SharedPreferencesUtil;
  */
 public class NotificationActivity extends ActionBarActivity implements SwipeRefreshLayout.OnRefreshListener, View.OnClickListener {
 
-    public static int NOTIFICATION_IS_READ = 1;
     private static final String NOTIFICATION_DATA_PATH = "_notification_data.bean";
+    public static int NOTIFICATION_IS_READ = 1;
     private Context mContext;
     private ProgressDialog progress;
     private SharedPreferences sp;
@@ -59,7 +59,7 @@ public class NotificationActivity extends ActionBarActivity implements SwipeRefr
         progress = new ProgressDialog(this);
         sp = getSharedPreferences(GlobalParams.TAG_LOGIN_PREFERENCES, Context.MODE_PRIVATE);
 
-        NotificationManager manager = (NotificationManager)getSystemService(Context.NOTIFICATION_SERVICE);
+        NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         manager.cancelAll();
 
         initView();
@@ -106,7 +106,7 @@ public class NotificationActivity extends ActionBarActivity implements SwipeRefr
         switch (v.getId()) {
             case R.id.btn_back:
                 Intent intent = new Intent();
-                if(notificationAdapter.mNotificationList!=null){
+                if (notificationAdapter.mNotificationList != null) {
                     intent.putExtra("notification_num", String.valueOf(notificationAdapter.mNotificationList.size()));
                 }
                 setResult(NOTIFICATION_IS_READ, intent);
@@ -120,7 +120,7 @@ public class NotificationActivity extends ActionBarActivity implements SwipeRefr
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         Intent intent = new Intent();
-        if(notificationAdapter.mNotificationList!=null){
+        if (notificationAdapter.mNotificationList != null) {
             intent.putExtra("notification_num", String.valueOf(notificationAdapter.mNotificationList.size()));
         }
         setResult(NOTIFICATION_IS_READ, intent);
