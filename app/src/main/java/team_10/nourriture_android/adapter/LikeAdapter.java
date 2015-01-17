@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -18,6 +19,7 @@ import com.loopj.android.http.JsonHttpResponseHandler;
 
 import org.apache.http.Header;
 import org.json.JSONArray;
+import org.json.JSONObject;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -29,6 +31,8 @@ import team_10.nourriture_android.activity.NourritureRestClient;
 import team_10.nourriture_android.bean.DishBean;
 import team_10.nourriture_android.bean.LikeBean;
 import team_10.nourriture_android.jsonTobean.JsonTobean;
+import team_10.nourriture_android.utils.GlobalParams;
+import team_10.nourriture_android.utils.SharedPreferencesUtil;
 
 /**
  * Created by ping on 2015/1/6.
@@ -41,6 +45,7 @@ public class LikeAdapter extends BaseAdapter {
     private boolean isUpdate = false;
     private LikeViewHolder lvh = null;
     private DishBean dishBean;
+    private SharedPreferences sp;
 
     public LikeAdapter(Context context, List<LikeBean> dishList) {
         mInflater = LayoutInflater.from(context);
@@ -140,8 +145,36 @@ public class LikeAdapter extends BaseAdapter {
         });
     }
 
-    public void deleteFavorDish(LikeBean likeBean) {
+    public void deleteFavorDish(final LikeBean likeBean) {
+        sp = mContext.getSharedPreferences(GlobalParams.TAG_LOGIN_PREFERENCES, Context.MODE_PRIVATE);
+        String username = sp.getString(SharedPreferencesUtil.TAG_USER_NAME, "");
+        String password = sp.getString(SharedPreferencesUtil.TAG_PASSWORD, "");
 
+        String url = "likes/" + likeBean.get_id();
+        NourritureRestClient.deleteWithLogin(url, username, password, new JsonHttpResponseHandler() {
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                Log.e("delete favor like", response.toString());
+                if (statusCode == 204) {
+                    mLikeList.remove(likeBean);
+                    notifyDataSetChanged();
+                } else {
+                    Toast.makeText(mContext, "Deleting favor dish is wrong. Please try it again.", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                super.onFailure(statusCode, headers, responseString, throwable);
+                Toast.makeText(mContext, "Deleting favor dish is wrong. Please try it again.", Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+                super.onFailure(statusCode, headers, throwable, errorResponse);
+                Toast.makeText(mContext, "Deleting favor dish is wrong. Please try it again.", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     @Override
