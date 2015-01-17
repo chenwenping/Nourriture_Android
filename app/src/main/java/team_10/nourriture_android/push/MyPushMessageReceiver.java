@@ -1,6 +1,7 @@
 package team_10.nourriture_android.push;
 
 import android.content.Context;
+import android.content.Intent;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -9,9 +10,15 @@ import com.baidu.frontia.api.FrontiaPushMessageReceiver;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.Serializable;
 import java.text.SimpleDateFormat;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+
+import team_10.nourriture_android.activity.NotificationActivity;
+import team_10.nourriture_android.bean.NotificationBean;
+import team_10.nourriture_android.jsonTobean.JsonTobean;
 
 /**
  * Push消息处理receiver。请编写您需要的回调函数， 一般来说： onBind是必须的，用来处理startWork返回值；
@@ -35,11 +42,14 @@ import java.util.List;
  * 当您遇到以上返回错误时，如果解释不了您的问题，请用同一请求的返回值requestId和errorCode联系我们追查问题。
  */
 public class MyPushMessageReceiver extends FrontiaPushMessageReceiver {
+
     /**
      * TAG to Log
      */
     public static final String TAG = MyPushMessageReceiver.class
             .getSimpleName();
+    private List<NotificationBean> unReadNotificationList;
+    private int notification_num = 0;
 
     /**
      * 调用PushManager.startWork后，sdk将对push
@@ -231,10 +241,24 @@ public class MyPushMessageReceiver extends FrontiaPushMessageReceiver {
 
         Utils.logStringCache = logText;
 
-        /*Intent intent = new Intent();
-        intent.setClass(context.getApplicationContext(), MainActivity.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        context.getApplicationContext().startActivity(intent);*/
+        try {
+            unReadNotificationList = JsonTobean.getList(NotificationBean[].class, content.toString());
+            Collections.reverse(unReadNotificationList);
+            if (unReadNotificationList != null && unReadNotificationList.size() > 0) {
+                notification_num = unReadNotificationList.size();
+
+                Intent intentBroadcast = new Intent();
+                intentBroadcast.putExtra("notificationNum", String.valueOf(notification_num));
+                intentBroadcast.setAction("android.action.Notification");
+                context.getApplicationContext().sendBroadcast(intentBroadcast);
+
+                Intent intent = new Intent(context.getApplicationContext(), NotificationActivity.class);
+                intent.putExtra("unReadNotificationList", (Serializable) unReadNotificationList);
+                context.getApplicationContext().startActivity(intent);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
 }

@@ -14,6 +14,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.loopj.android.http.JsonHttpResponseHandler;
+import com.loopj.android.http.RequestParams;
 
 import org.apache.http.Header;
 import org.json.JSONArray;
@@ -53,7 +54,9 @@ public class DishDetailActivity extends ActionBarActivity implements View.OnClic
     private SharedPreferences sp;
     private boolean isLogin = false;
     private boolean isLike = false;
+    private int favor_num = 0;
     private UserBean userBean;
+    private LikeBean likeBean;
     private int request = 5;
 
     @Override
@@ -100,6 +103,8 @@ public class DishDetailActivity extends ActionBarActivity implements View.OnClic
         } else {
             asynImageLoader.showImageAsyn(dish_picture_img, pictureBaseUrl + dishBean.getPicture(), R.drawable.default_dish_picture);
         }
+
+        getLikesFromDish();
     }
 
     public void getLikesFromDish() {
@@ -112,12 +117,15 @@ public class DishDetailActivity extends ActionBarActivity implements View.OnClic
                     try {
                         likeList = JsonTobean.getList(LikeBean[].class, response.toString());
                         ObjectPersistence.writeObjectToFile(DishDetailActivity.this, likeList, dishBean.get_id() + DISH_LIKES_DATA_PATH);
-                        int favor_num = likeList.size();
-                        favor_num_tv.setText(favor_num + " Favors");
-                        for (int i = 0; i < likeList.size(); i++) {
-                            if ((likeList.get(i).getUser()).equals(userBean.get_id())) {
-                                isLike = true;
-                                dish_favor_img.setImageResource(R.drawable.favor_btn_highlight);
+                        if (likeList != null && likeList.size() > 0) {
+                            favor_num = likeList.size();
+                            favor_num_tv.setText(favor_num + " Favor");
+                            for (int i = 0; i < likeList.size(); i++) {
+                                if ((likeList.get(i).getUser()).equals(userBean.get_id())) {
+                                    isLike = true;
+                                    dish_favor_img.setImageResource(R.drawable.favor_btn_highlight);
+                                    likeBean = likeList.get(i);
+                                }
                             }
                         }
                     } catch (Exception e) {
@@ -126,8 +134,18 @@ public class DishDetailActivity extends ActionBarActivity implements View.OnClic
                 } else {
                     getLocalLikesData();
                     if (likeList != null && likeList.size() > 0) {
-                        int favor_num = likeList.size();
-                        favor_num_tv.setText(favor_num + " Favors");
+                        favor_num = likeList.size();
+                        favor_num_tv.setText(favor_num + " Favor");
+                        for (int i = 0; i < likeList.size(); i++) {
+                            if ((likeList.get(i).getUser()).equals(userBean.get_id())) {
+                                isLike = true;
+                                dish_favor_img.setImageResource(R.drawable.favor_btn_highlight);
+                                likeBean = likeList.get(i);
+                            } else {
+                                isLike = false;
+                                dish_favor_img.setImageResource(R.drawable.favor_btn_default);
+                            }
+                        }
                     } else {
                         Toast.makeText(DishDetailActivity.this, "Network connection is wrong.", Toast.LENGTH_SHORT).show();
                     }
@@ -138,8 +156,18 @@ public class DishDetailActivity extends ActionBarActivity implements View.OnClic
             public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
                 getLocalLikesData();
                 if (likeList != null && likeList.size() > 0) {
-                    int favor_num = likeList.size();
-                    favor_num_tv.setText(favor_num + " Favors");
+                    favor_num = likeList.size();
+                    favor_num_tv.setText(favor_num + " Favor");
+                    for (int i = 0; i < likeList.size(); i++) {
+                        if ((likeList.get(i).getUser()).equals(userBean.get_id())) {
+                            isLike = true;
+                            dish_favor_img.setImageResource(R.drawable.favor_btn_highlight);
+                            likeBean = likeList.get(i);
+                        } else {
+                            isLike = false;
+                            dish_favor_img.setImageResource(R.drawable.favor_btn_default);
+                        }
+                    }
                 } else {
                     Toast.makeText(DishDetailActivity.this, "Network connection is wrong.", Toast.LENGTH_SHORT).show();
                 }
@@ -160,11 +188,21 @@ public class DishDetailActivity extends ActionBarActivity implements View.OnClic
             case R.id.ll_dish_favor:
                 if (isLogin) {
                     if (isLike) {
+                        deleteLike();
                         isLike = false;
+                        favor_num = favor_num - 1;
+                        if (favor_num > 0) {
+                            favor_num_tv.setText(favor_num + " Favor");
+                        } else {
+                            favor_num_tv.setText(" Favor");
+                        }
                         dish_favor_img.setImageResource(R.drawable.favor_btn_default);
                         Toast.makeText(this, "don't like it.", Toast.LENGTH_SHORT).show();
                     } else {
+                        postLike();
                         isLike = true;
+                        favor_num = favor_num + 1;
+                        favor_num_tv.setText(favor_num + " Favor");
                         dish_favor_img.setImageResource(R.drawable.favor_btn_highlight);
                         Toast.makeText(this, "like it.", Toast.LENGTH_SHORT).show();
                     }
@@ -186,6 +224,57 @@ public class DishDetailActivity extends ActionBarActivity implements View.OnClic
             default:
                 break;
         }
+    }
+
+    public void postLike() {
+        RequestParams params = new RequestParams();
+        params.add("dish", dishBean.get_id());
+        params.add("like", String.valueOf(isLike));
+
+        String username = sp.getString(SharedPreferencesUtil.TAG_USER_NAME, "");
+        String password = sp.getString(SharedPreferencesUtil.TAG_PASSWORD, "");
+
+        NourritureRestClient.postWithLogin("likes", params, username, password, new JsonHttpResponseHandler() {
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                Log.e("post like", response.toString());
+                if (statusCode == 201) {
+                    try {
+                        likeBean = JsonTobean.getBean(LikeBean.class, response.toString());
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+                //Toast.makeText(getApplicationContext(), "like it is wrong. Please try it.", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    public void deleteLike() {
+        String username = sp.getString(SharedPreferencesUtil.TAG_USER_NAME, "");
+        String password = sp.getString(SharedPreferencesUtil.TAG_PASSWORD, "");
+
+        String url = "likes/" + likeBean.get_id();
+        NourritureRestClient.deleteWithLogin(url, username, password, new JsonHttpResponseHandler() {
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                Log.e("delete like", response.toString());
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                super.onFailure(statusCode, headers, responseString, throwable);
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+                super.onFailure(statusCode, headers, throwable, errorResponse);
+            }
+        });
     }
 
     @Override

@@ -64,11 +64,11 @@ public class LetterListView extends View {
             float xPos = width / 2 - paint.measureText(b[i]) / 2;
             float yPos = singleHeight * i + singleHeight;
            /*if (i == SEARCH) {
-	    	   float magnifier_xPos = width/2 - bitmap.getWidth()/2;
+               float magnifier_xPos = width/2 - bitmap.getWidth()/2;
 	    	   canvas.drawBitmap(bitmap, magnifier_xPos, singleHeight / 6, paint);
 	       }else {*/
             canvas.drawText(b[i], xPos, yPos, paint);
-	       /*}*/
+           /*}*/
             paint.reset();
         }
     }
