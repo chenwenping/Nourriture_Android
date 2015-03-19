@@ -45,6 +45,7 @@ import team_10.nourriture_android.utils.SharedPreferencesUtil;
 public class NotificationFragment extends Fragment implements View.OnClickListener {
 
     private static final String NOTIFICATION_DATA_PATH = "_notification_data.bean";
+    private LinearLayout ll_user;
     private RelativeLayout rl_user_login, rl_user_info;
     private Button btn_login;
     private TextView tv_name, tv_birth, tv_introduction, tv_notification_num;
@@ -57,6 +58,7 @@ public class NotificationFragment extends Fragment implements View.OnClickListen
     private NotificationBroadCast receiver;
     private int notification_num = 0;
     private List<NotificationBean> unReadNotificationList;
+    private String pictureBaseUrl = "http://176.31.191.185:1337/";
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -80,6 +82,7 @@ public class NotificationFragment extends Fragment implements View.OnClickListen
         IntentFilter intentFilter = new IntentFilter("android.action.Notification");
         getActivity().registerReceiver(receiver, intentFilter);
 
+        ll_user = (LinearLayout) getActivity().findViewById(R.id.user_ll);
         rl_user_login = (RelativeLayout) getActivity().findViewById(R.id.user_login_rl);
         rl_user_info = (RelativeLayout) getActivity().findViewById(R.id.user_info_rl);
         btn_login = (Button) getActivity().findViewById(R.id.login_btn);
@@ -96,12 +99,23 @@ public class NotificationFragment extends Fragment implements View.OnClickListen
             userBean = MyApplication.getInstance().getUserBeanFromFile();
             tv_name.setText(userBean.getUsername());
             tv_introduction.setText(userBean.getIntroduction());
-            AsynImageLoader asynImageLoader = new AsynImageLoader();
+            /*AsynImageLoader asynImageLoader = new AsynImageLoader();
             if (userBean.getPicture() == null || "".equals(userBean.getPicture().trim()) || "null".equals(userBean.getPicture().trim())) {
                 img_photo.setImageResource(R.drawable.default_avatar);
             } else {
-                asynImageLoader.showImageAsyn(img_photo, userBean.getPicture(), R.drawable.default_avatar);
-            }
+                asynImageLoader.showImageAsyn(img_photo, pictureBaseUrl + userBean.getPicture(), R.drawable.default_avatar);
+            }*/
+
+            ll_user.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(getActivity(), UserInfoActivity.class);
+                    Bundle bundle = new Bundle();
+                    bundle.putSerializable("userBean", userBean);
+                    intent.putExtras(bundle);
+                    startActivity(intent);
+                }
+            });
         } else {
             rl_user_info.setVisibility(View.GONE);
             rl_user_login.setVisibility(View.VISIBLE);

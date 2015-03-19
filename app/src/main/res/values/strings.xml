@@ -4,7 +4,6 @@
     <string name="app_name">Nourriture</string>
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
-
     <string name="delete">delete</string>
     <string name="replay">replay</string>
     <string name="login">Login</string>
@@ -23,5 +22,7 @@
     <string name="user_notification">My Notification</string>
     <string name="login_tip">please login first</string>
     <string name="user_no_dish_tip">please add dish first</string>
+    <string name="title_activity_user_info">UserInfoActivity</string>
+    <string name="userInfo">UserInfo</string>
 
 </resources>

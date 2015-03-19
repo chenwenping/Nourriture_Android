@@ -151,7 +151,7 @@ public class PollingService extends Service {
             while (true) {
                 System.out.println("Polling...");
                 try {
-                    Thread.sleep(1000);
+                    Thread.sleep(10000000);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }

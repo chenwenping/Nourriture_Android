@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
+import android.util.Base64;
 import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
@@ -19,6 +20,10 @@ import com.loopj.android.http.RequestParams;
 
 import org.apache.http.Header;
 import org.json.JSONObject;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.net.URLEncoder;
 
 import team_10.nourriture_android.R;
 import team_10.nourriture_android.bean.DishBean;
@@ -42,6 +47,7 @@ public class DishAddActivity extends ActionBarActivity implements View.OnClickLi
     private SharedPreferences sp;
     private ProgressDialog progress;
     private DishBean dishBean;
+    private String picturePath = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,10 +72,33 @@ public class DishAddActivity extends ActionBarActivity implements View.OnClickLi
         back_btn.setOnClickListener(this);
     }
 
+    /*public String encodeBase64File(String path){
+        try {
+            File file = new File(path);
+            FileInputStream inputFile = new FileInputStream(file);
+            byte[] buffer = new byte[(int) file.length()];
+            inputFile.read(buffer);
+            inputFile.close();
+            return Base64.encodeToString(buffer, Base64.DEFAULT);
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+        return null;
+    }*/
+
     public void addDish(String dish_name, String dish_description) {
         RequestParams params = new RequestParams();
         params.add("name", dish_name);
         params.add("description", dish_description);
+
+        /*if(picturePath != null && "".equals(picturePath.trim())){
+            picturePath = encodeBase64File("nn");
+            try {
+                params.add("picture", URLEncoder.encode(picturePath, "UTF-8"));
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+        }*/
 
         String username = sp.getString(SharedPreferencesUtil.TAG_USER_NAME, "");
         String password = sp.getString(SharedPreferencesUtil.TAG_PASSWORD, "");

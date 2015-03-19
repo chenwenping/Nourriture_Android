@@ -50,7 +50,8 @@ public class DishDetailActivity extends ActionBarActivity implements View.OnClic
     private TextView favor_num_tv, comment_num_tv;
     private List<LikeBean> likeList;
     private List<CommentBean> commentList;
-    private String pictureBaseUrl = "http://5.196.19.84:1337/";
+//    private String pictureBaseUrl = "http://5.196.19.84:1337/";
+    private String pictureBaseUrl = "http://176.31.191.185:1337/";
     private SharedPreferences sp;
     private boolean isLogin = false;
     private boolean isLike = false;

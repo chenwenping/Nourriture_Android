@@ -5,7 +5,8 @@ import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
 
 public class NourritureRestClient {
-    private static final String BASE_URL = "http://5.196.19.84:1337/api/";
+    //private static final String BASE_URL = "http://5.196.19.84:1337/api/";
+    private static final String BASE_URL = "http://176.31.191.185:1337/api/";
 
     private static AsyncHttpClient client = new AsyncHttpClient();
 
