@@ -81,7 +81,7 @@ public class MainActivity extends ActionBarActivity {
             @Override
             public void onClick(View v) {
                 FragmentManager fragmentManager = getSupportFragmentManager();
-                fragmentManager.beginTransaction().replace(R.id.contentFrame, new RecipesFragment()).commit();
+                fragmentManager.beginTransaction().replace(R.id.contentFrame, new RestaurantFragment()).commit();
             }
         });
         btn_notification.setOnClickListener(new View.OnClickListener() {

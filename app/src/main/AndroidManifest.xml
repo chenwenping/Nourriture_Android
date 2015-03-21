@@ -141,6 +141,10 @@
             android:name=".activity.UserInfoActivity"
             android:label="@string/title_activity_user_info" >
         </activity>
+        <activity
+            android:name=".activity.RestaurantDetailActivity"
+            android:label="@string/title_activity_restaurant_detail" >
+        </activity>
     </application>
 
 </manifest>
